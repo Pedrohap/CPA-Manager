@@ -1,7 +1,6 @@
 const pessoaModel = require ('../models/pessoaModel')
 
 async function createPessoa(sexo,nome,email,cpf,data_nascimento){
-
     try{
         return await pessoaModel.criarPessoa(sexo,nome,email,cpf,data_nascimento);
 
@@ -28,7 +27,13 @@ async function getPessoaNomeParcial(entrada){
 }
 
 async function removePessoa(entrada){
-    return await pessoaModel.removePessoa(entrada);
+    try{
+        return await pessoaModel.removePessoa(entrada);
+
+    } catch(error) {
+        console.log(error)
+        return {status: "error", codigo: error.code}
+    }
 }
 
 async function updatePessoa(sexo,nome,email,cpf,data_nascimento,id){

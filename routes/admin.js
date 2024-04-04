@@ -3,7 +3,7 @@ var router = express.Router();
 
 const usuarioController = require('../controllers/usuarioController')
 const pessoaController = require('../controllers/pessoaController')
-
+const docenteController = require('../controllers/docenteController')
 
 const requireAuth = (req, res, next) => {
   if (req.session.user && req.session.user.acesso === 'admin') {
@@ -70,6 +70,19 @@ router.post('/atualizarPessoa', requireAuth, async function (req, res, next){
 
 });
 
+router.post('/excluirPessoaId/:id', requireAuth, async function(req,res,next) {
+  let id = req.params.id;
+
+  let result = await pessoaController.removePessoa(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+});
+
 router.get('/getPessoaId/:id', requireAuth, async function(req,res,next) {
   let id = req.params.id;
 
@@ -97,7 +110,32 @@ router.get('/getPessoaNome/:nomeParc', requireAuth, async function(req,res,next)
 })
 
 router.get('/cadastrarDocente', requireAuth, function (req, res, next){
-  res.render('cadastroDocete', {title: 'Cadastrar Docente'})
+  res.render('cadastroDocente', {title: 'Cadastrar Docente'})
 });
+
+router.post('/cadastrarDocente', requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    idDocente:req.body.idDocente,
+    sexo: req.body.sexo,
+    nome: req.body.nome,
+    email: req.body.email,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    idDocente: req.body.idDocente,
+    especializacao: req.body.especializacao,
+    emailInstitucional: req.body.emailInstitucional,
+    senha: req.body.senha
+  }
+
+  let result = await docenteController.criarDocente(dados);
+
+  if (typeof result === "string"){
+    res.status(409).send(result);
+    return;
+  }
+  res.send(result) ;
+});
+
 
 module.exports = router;

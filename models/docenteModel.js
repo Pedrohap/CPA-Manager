@@ -12,24 +12,23 @@ class Docente{
     }
 }
 
-async function criarDocente(pessoa,especializacao,email_institucional,senha){
+async function criarDocente(dados){
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
-    const senhaHash = await bcrypt.hash(senha, salt);
+    const senhaHash = await bcrypt.hash(dados.senha, salt);
     
     const client = await pool.connect();
     
     try {
         await client.query('BEGIN');
 
-        const queryText = 'INSERT INTO tbDocente(docente_pessoa,docente_especializacao,docente_email_institucional,senha_hash,salt) VALUES ($1, $2, $3, $4, $5)';
-        const values = [pessoa,especializacao,email_institucional,senhaHash,salt];
+        const queryText = 'INSERT INTO tbDocente(docente_id,docente_pessoa,docente_especializacao,docente_email_institucional,senha_hash,salt) VALUES ($1, $2, $3, $4, $5, $6)';
+        const values = [dados.idDocente,dados.id,dados.especializacao,dados.emailInstitucional,senhaHash,salt];
         const { rows } = await client.query(queryText,values);
 
         await client.query('COMMIT');
 
-        const novoDocente = new Docente(rows[0].docente_id, rows[0].docente_pessoa, rows[0].docente_especializacao, rows[0].docente_email_institucional, rows[0].senha_hash, rows[0].salt);
-        return novoDocente;
+        return true;
     } catch (error) {
         await client.query('ROLLBACK');
         throw error;

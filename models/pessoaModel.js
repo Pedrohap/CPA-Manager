@@ -97,7 +97,7 @@ async function removePessoa(id){
   
       await client.query('COMMIT');
   
-      return { message: 'Usuário removido com sucesso' };
+      return true;
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;

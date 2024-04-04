@@ -59,26 +59,43 @@ $(document).ready(function () {
 
     //FIM DAS FUNÇÕES DA BARRA DE AUTO COMPLETAR
 
-    $("#createPessoaForm").submit(function (e) {
+    $("#createDocenteForm").submit(function (e) {
         e.preventDefault();
 
         $("#btnSalvar").attr("disabled", "disabled");
         $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
         if ($('#formAction').val() === 'new'){
+
+            //As senhas não conferem ou está vazia, erro é exibido
+            if($("#senhaConf").val() != $("#senha").val() && $("#senhaConf").val() != ""){
+                $('#modalLabel').html("Erro");
+                $('#modalTexto').html("As senhas digitadas não estão iguais!");
+                $('#modal').modal('show');
+                $("#btnSalvar").removeAttr("disabled").html("Salvar");
+                return
+            }
+
             var formData = {
+                id: $("#id").val(),
+                idDocente: $("#idDocente").val(),
                 sexo: $("#sexo").val(),
                 nome: $("#nome").val(),
                 email: $("#email").val(),
                 cpf: $("#cpf").val(),
-                data_nascimento: $("#data_nascimento").val()
+                data_nascimento: $("#data_nascimento").val(),
+                idDocente: $('#idDocente').val(),
+                especializacao: $('#especializacao').val(),
+                emailInstitucional: $('#emailInstitucional').val(),
+                senha: $('#senha').val()
             };
+
             $.ajax({
                 type: "POST",
-                url: "/admin/cadastrarPessoa",
+                url: "/admin/cadastrarDocente",
                 data: formData,
                 success: function (response) {
                     $('#modalLabel').html("Sucesso")
-                    $('#modalTexto').html("Pessoa criada com sucesso")
+                    $('#modalTexto').html("Docente criada com sucesso")
                     $('#modal').modal('show')
                     limpaCampos();
                     disableForm();
@@ -90,6 +107,7 @@ $(document).ready(function () {
                     $("#btnSalvar").removeAttr("disabled").html("Salvar");
                 }
             })
+
         } else if ($('#formAction').val() === 'edit'){
             var formData = {
                 sexo: $("#sexo").val(),
@@ -124,6 +142,12 @@ $(document).ready(function () {
     $('#btnNovo').click(function (){
         $('#formAction').val("new");
         $('#btnNovo').prop( "disabled", true );
+        $('#id').prop( "disabled", false );
+        $('#idDocente').prop( "disabled", false );
+        $('#especializacao').prop( "disabled", false );
+        $('#emailInstitucional').prop( "disabled", false );
+        $('#senha').prop( "disabled", false );
+        $('#senhaConf').prop( "disabled", false );
         $('#nome').prop( "disabled", false );
         $('#sexo').prop( "disabled", false );
         $('#email').prop( "disabled", false );
@@ -137,7 +161,12 @@ $(document).ready(function () {
     $('#btnEditar').click(function (){
         $('#formAction').val("edit");
         $('#btnNovo').prop( "disabled", true );
-        $('#btnExcluir').prop( "disabled", true );
+        $('#id').prop( "disabled", true );
+        $('#idDocente').prop( "disabled", false );
+        $('#especializacao').prop( "disabled", false );
+        $('#emailInstitucional').prop( "disabled", false );
+        $('#senha').prop( "disabled", false );
+        $('#senhaConf').prop( "disabled", false );
         $('#nome').prop( "disabled", false );
         $('#sexo').prop( "disabled", false );
         $('#email').prop( "disabled", false );
@@ -148,30 +177,34 @@ $(document).ready(function () {
         $('#btnCancelar').show()
     })
 
-    $('#btnExcluir').click(function (){
-        if($('#id').val()!= ""){
-            let id = $('#id').val();
-            $.ajax({
-                type: "POST",
-                url: `/admin/excluirPessoaId/${id}`,
-                success: function (response) {
-                    $('#modalLabel').html("Sucesso")
-                    $('#modalTexto').html("Pessoa excluida com Sucesso")
-                    $('#modal').modal('show')
-                    limpaCampos();
-                    disableForm();
-                },
-                error: function (response){
-                    $('#modalLabel').html("Erro");
-                    $('#modalTexto').html(response.responseText);
-                    $('#modal').modal('show');;
-                }
-            })
-        }
+    $('#id').blur(function(){
+        getPessoaByID();
     })
 })
 
 function getPessoaByID(){
+    let idBusca = $('#id').val();
+
+    $.ajax({
+        type: "GET",
+        url: `/admin/getPessoaId/${idBusca}`,
+        success: function (response) {
+            $('#id').val(response.id);
+            $('#nome').val(response.nome);
+            $('#sexo').val(response.sexo);
+            $('#email').val(response.email);
+            $('#cpf').val(response.cpf);
+            $('#data_nascimento').val(new Date(response.data_nascimento).toISOString().split('T')[0]);
+            $('#btnEditar').prop( "disabled", false )
+        },
+        error: function (response){
+            limpaCampos();
+            $('#btnEditar').prop( "disabled", true )
+        }
+    })
+}
+
+function getDocenteByID(){
     let idBusca = $('#idBusca').val();
 
     $.ajax({
@@ -185,19 +218,24 @@ function getPessoaByID(){
             $('#email').val(response.email);
             $('#cpf').val(response.cpf);
             $('#data_nascimento').val(new Date(response.data_nascimento).toISOString().split('T')[0]);
-            $('#btnEditar').prop( "disabled", false );
-            $('#btnExcluir').prop( "disabled", false );
+            $('#btnEditar').prop( "disabled", false )
         },
         error: function (response){
             limpaCampos();
-            $('#btnEditar').prop( "disabled", true );
-            $('#btnExcluir').prop( "disabled", true );
+            $('#btnEditar').prop( "disabled", true )
         }
     })
 }
 
+
 function disableForm(){
     $('#btnNovo').prop( "disabled", false );
+    $('#id').prop( "disabled", true );
+    $('#idDocente').prop( "disabled", true );
+    $('#especializacao').prop( "disabled", true );
+    $('#emailInstitucional').prop( "disabled", true );
+    $('#senha').prop( "disabled", true );
+    $('#senhaConf').prop( "disabled", true );
     $('#nome').prop( "disabled", true );
     $('#sexo').prop( "disabled", true );
     $('#email').prop( "disabled", true );
@@ -209,14 +247,18 @@ function disableForm(){
 function limpaCampos(){
     $('#idBusca').val("");
     $('#nomeBusca').val("");
+    $('#idDocente').val("");
+    $('#especializacao').val("");
+    $('#emailInstitucional').val("");
+    $('#senha').val("");
+    $('#senhaConf').val("");
     $('#id').val("");
     $('#nome').val("");
     $('#sexo').val("");
     $('#email').val("");
     $('#cpf').val("");
     $('#data_nascimento').val("");
-    $('#btnEditar').prop( "disabled", true );
-    $('#btnExcluir').prop( "disabled", true );
+    $('#btnEditar').prop( "disabled", true )
 }
 
 function geraTabela(response){
