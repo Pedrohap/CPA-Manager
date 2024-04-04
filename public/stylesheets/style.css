@@ -1,0 +1,43 @@
+body {
+  /*padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+}
+
+a {
+  color: #00B7FF;
+}
+
+.centerDiv{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.val{
+  position: absolute;
+  color: black;
+  bottom: 232px;
+  left: 542px;
+  font-family: 'Sofia Sans Extra Condensed', sans-serif;
+  font-size: 30px;
+}
+
+.loginFrame{
+  background-color: white;
+  border-radius: 25px;
+  padding: 30px;
+}
+
+.userName{
+  display: inline-block;
+  text-transform: lowercase;
+}
+
+.userName::first-line{
+  text-transform: capitalize
+}
+
+.logout{
+  color: white !important;
+}
