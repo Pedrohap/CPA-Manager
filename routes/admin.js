@@ -137,5 +137,32 @@ router.post('/cadastrarDocente', requireAuth, async function (req, res, next){
   res.send(result) ;
 });
 
+router.get('/getDocenteId/:id', requireAuth, async function(req,res,next) {
+  let id = req.params.id;
+
+  let result = await docenteController.getDocenteByID(id);
+
+  if (result === "Usuário não encontrado"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+})
+
+router.get('/getDocenteNome/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await docenteController.getDocenteNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    console.log(result)
+    res.send(result);
+  }
+})
+
 
 module.exports = router;

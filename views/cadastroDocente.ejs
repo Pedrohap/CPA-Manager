@@ -1,6 +1,8 @@
 <%- include('layouts/header'); -%>
 <%- include('layouts/navbar'); -%>
 <%- include('layouts/modal'); -%>
+<%- include('layouts/modal-confirm'); -%>
+
 <div class="container">
     <h1 class="display-6 mb-3">Cadastro de Docente</h1>
 
@@ -41,6 +43,9 @@
                     
                         <input type="radio" class="btn-check" name="btnRadio" id="btnEditar" autocomplete="off" disabled>
                         <label class="btn btn-outline-primary" for="btnEditar">Editar</label>
+
+                        <input type="radio" class="btn-check" name="btnRadio" id="btnExcluir" autocomplete="off" disabled>
+                        <label class="btn btn-outline-danger" for="btnExcluir">Excluir</label>
                     </div>
                 </div>
             </div>

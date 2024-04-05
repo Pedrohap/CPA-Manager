@@ -81,3 +81,12 @@ CREATE TABLE tbQuestao_form(
 CREATE VIEW pessoa_dados_basicos AS
 SELECT pessoa_id as id, pessoa_nome as nome
 FROM tbpessoa;
+
+CREATE VIEW docente_dados_basicos AS
+SELECT docente_id as id, tbpessoa.pessoa_nome as nome
+FROM tbdocente JOIN tbpessoa ON docente_pessoa = tbpessoa.pessoa_id ;
+
+CREATE VIEW docente_dados AS
+SELECT docente_id AS docente_id , docente_pessoa AS id, docente_especializacao AS especializacao,docente_email_institucional AS email_institucional, t2.pessoa_cpf AS cpf, t2.pessoa_email AS email, t2.pessoa_sexo AS sexo, t2.pessoa_nome AS nome, t2.pessoa_data_nascimento AS data_nascimento
+FROM tbdocente t 
+INNER JOIN tbpessoa t2 ON t.docente_pessoa = t2.pessoa_id;

@@ -62,9 +62,10 @@ $(document).ready(function () {
     $("#createPessoaForm").submit(function (e) {
         e.preventDefault();
 
-        $("#btnSalvar").attr("disabled", "disabled");
-        $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
         if ($('#formAction').val() === 'new'){
+            $("#btnSalvar").attr("disabled", "disabled");
+            $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
+    
             var formData = {
                 sexo: $("#sexo").val(),
                 nome: $("#nome").val(),
@@ -91,31 +92,44 @@ $(document).ready(function () {
                 }
             })
         } else if ($('#formAction').val() === 'edit'){
-            var formData = {
-                sexo: $("#sexo").val(),
-                nome: $("#nome").val(),
-                email: $("#email").val(),
-                cpf: $("#cpf").val(),
-                data_nascimento: $("#data_nascimento").val(),
-                id: $("#id").val()
-            };
-            $.ajax({
-                type: "POST",
-                url: "/admin/atualizarPessoa",
-                data: formData,
-                success: function (response) {
-                    $('#modalLabel').html("Sucesso")
-                    $('#modalTexto').html("Pessoa atualizada com sucesso")
-                    $('#modal').modal('show')
-                    limpaCampos();
-                    disableForm();
-                },
-                error: function (response){
-                    $('#modalLabel').html("Erro");
-                    $('#modalTexto').html(response.responseText);
-                    $('#modal').modal('show');
-                    $("#btnSalvar").removeAttr("disabled").html("Salvar");
-                }
+            $('#modalLabelConfirm').html("Alerta de Alteração")
+            $('#modalTextoConfirm').html(`Deseja realmente estas alterações?`)
+            $('#modalBtnConfirmar').removeClass();
+            $('#modalBtnConfirmar').addClass('btn btn-danger')
+            $('#modalBtnConfirmar').html('Alterar')
+            $('#modalConfirm').modal('show')
+
+            $('#modalBtnConfirmar').click(function(){
+                $('#modalConfirm').modal('hide')
+                $("#btnSalvar").attr("disabled", "disabled");
+                $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
+        
+                var formData = {
+                    sexo: $("#sexo").val(),
+                    nome: $("#nome").val(),
+                    email: $("#email").val(),
+                    cpf: $("#cpf").val(),
+                    data_nascimento: $("#data_nascimento").val(),
+                    id: $("#id").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/atualizarPessoa",
+                    data: formData,
+                    success: function (response) {
+                        $('#modalLabel').html("Sucesso")
+                        $('#modalTexto').html("Pessoa atualizada com sucesso")
+                        $('#modal').modal('show')
+                        limpaCampos();
+                        disableForm();
+                    },
+                    error: function (response){
+                        $('#modalLabel').html("Erro");
+                        $('#modalTexto').html(response.responseText);
+                        $('#modal').modal('show');
+                        $("#btnSalvar").removeAttr("disabled").html("Salvar");
+                    }
+                })
             })
         }
 
@@ -150,22 +164,32 @@ $(document).ready(function () {
 
     $('#btnExcluir').click(function (){
         if($('#id').val()!= ""){
-            let id = $('#id').val();
-            $.ajax({
-                type: "POST",
-                url: `/admin/excluirPessoaId/${id}`,
-                success: function (response) {
-                    $('#modalLabel').html("Sucesso")
-                    $('#modalTexto').html("Pessoa excluida com Sucesso")
-                    $('#modal').modal('show')
-                    limpaCampos();
-                    disableForm();
-                },
-                error: function (response){
-                    $('#modalLabel').html("Erro");
-                    $('#modalTexto').html(response.responseText);
-                    $('#modal').modal('show');;
-                }
+            $('#modalLabelConfirm').html("Alerta de Exclusão")
+            $('#modalTextoConfirm').html(`Deseja realmente excluir a Pessoa ${$('#nome').val()}?`)
+            $('#modalBtnConfirmar').removeClass();
+            $('#modalBtnConfirmar').addClass('btn btn-danger')
+            $('#modalBtnConfirmar').html('Excluir')
+            $('#modalConfirm').modal('show')
+            
+            $('#modalBtnConfirmar').click( function(){
+                $('#modalConfirm').modal('hide')
+                let id = $('#id').val();
+                $.ajax({
+                    type: "POST",
+                    url: `/admin/excluirPessoaId/${id}`,
+                    success: function (response) {
+                        $('#modalLabel').html("Sucesso")
+                        $('#modalTexto').html("Pessoa excluida com Sucesso")
+                        $('#modal').modal('show')
+                        limpaCampos();
+                        disableForm();
+                    },
+                    error: function (response){
+                        $('#modalLabel').html("Erro");
+                        $('#modalTexto').html(response.responseText);
+                        $('#modal').modal('show');;
+                    }
+                })
             })
         }
     })

@@ -24,7 +24,7 @@ async function criarDocente(dados){
 
         const queryText = 'INSERT INTO tbDocente(docente_id,docente_pessoa,docente_especializacao,docente_email_institucional,senha_hash,salt) VALUES ($1, $2, $3, $4, $5, $6)';
         const values = [dados.idDocente,dados.id,dados.especializacao,dados.emailInstitucional,senhaHash,salt];
-        const { rows } = await client.query(queryText,values);
+        await client.query(queryText,values);
 
         await client.query('COMMIT');
 
@@ -37,14 +37,60 @@ async function criarDocente(dados){
     }
 }
 
-async function getDocente(entrada,senha){
+async function updateDocente(dados){  
+    const client = await pool.connect();
+    
+    try {
+        await client.query('BEGIN');
+
+        if(dados.senha != ""){
+            const saltRounds = 10;
+            const salt = await bcrypt.genSalt(saltRounds);
+            const senhaHash = await bcrypt.hash(dados.senha, salt);
+
+            const queryText = 
+            `UPDATE tbDocente
+            SET docente_especializacao = $2,
+                docente_email_institucional = $3,
+                senha_hash = $4,
+                salt = $5
+            WHERE docente_id = $1;`;
+            const values = [dados.idDocente,dados.especializacao,dados.emailInstitucional,senhaHash,salt];
+
+            await client.query(queryText,values);
+
+        }else {
+            const queryText = 
+            `UPDATE tbDocente
+            SET docente_especializacao = $2,
+                docente_email_institucional = $3
+            WHERE docente_id = $1;`;
+            const values = [dados.idDocente,dados.especializacao,dados.emailInstitucional];
+
+            await client.query(queryText,values);
+        }
+
+
+        await client.query('COMMIT');
+
+        return true;
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+
+async function getDocenteByID(id){
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
 
-        const queryText = 'SELECT *FROM tbDocente WHERE docente_email_institucional = $1 or docente_id = $1';
-        const values = [entrada];
+        const queryText = 'SELECT *FROM docente_dados WHERE docente_id = $1';
+        const values = [id];
         const { rows } = await client.query(queryText, values)
 
         if (rows.length === 0) {
@@ -52,20 +98,32 @@ async function getDocente(entrada,senha){
         }
 
         const docente = rows[0];
-        const senhaValida = await bcrypt.compare(senha, docente.senha_hash);
 
-        if (!senhaValida) {
-            throw new Error('Senha incorreta');
-        }
-
-        return {
-            id: docente.docente_id,
-            pessoa: docente.docente_pessoa,
-            email: docente.docente_email_institucional,
-            acesso: 'docente'
-        };
+        return docente;
     } catch (error) {
       throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function getDocenteNomeParcial(entrada){
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const queryText = 'SELECT *FROM docente_dados_basicos WHERE CHAR_LENGTH(nome) >= 4 AND UPPER(nome) LIKE UPPER ($1)';
+        const values = [`%${entrada}%`];
+        const { rows } = await client.query(queryText, values);
+
+        if (rows.length === 0) {
+            return "Usuário não encontrado";
+        }
+
+        return rows;
+    } catch (error) {
+        throw error;
     } finally {
         client.release();
     }
@@ -94,6 +152,8 @@ async function removeDocente(entrada){
 
 module.exports = {
     criarDocente,
-    getDocente,
+    updateDocente,
+    getDocenteByID,
+    getDocenteNomeParcial,
     removeDocente
 }
