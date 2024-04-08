@@ -32,6 +32,9 @@ async function removePessoa(entrada){
 
     } catch(error) {
         console.log(error)
+        if (error.code === '23503' && error.constraint === "tbdocente_docente_pessoa_fkey"){
+            return {status: "error", codigo: error.code, detail:"Existe um Docente vinculado a está Pessoa"}
+        }
         return {status: "error", codigo: error.code}
     }
 }

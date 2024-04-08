@@ -118,6 +118,7 @@ $(document).ready(function () {
             $('#modalConfirm').modal('show')
 
             $('#modalBtnConfirmar').click(function(){
+                $('#modalConfirm').modal('hide')
 
                 //As senhas não conferem ou está vazia, erro é exibido
                 if($("#senhaConf").val() != $("#senha").val()){
@@ -146,7 +147,7 @@ $(document).ready(function () {
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/admin/atualizarPessoa",
+                    url: "/admin/atualizarDocente",
                     data: formData,
                     success: function (response) {
                         $('#modalLabel').html("Sucesso")

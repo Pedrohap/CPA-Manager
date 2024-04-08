@@ -75,8 +75,8 @@ router.post('/excluirPessoaId/:id', requireAuth, async function(req,res,next) {
 
   let result = await pessoaController.removePessoa(id);
 
-  if (result.hasOwnProperty('status') ){
-    res.status(404).send(result.code);
+  if (result.hasOwnProperty('status') && result.codigo === '23503'){
+    res.status(409).send(result);
     return
   } else {
     res.send(result);
@@ -160,6 +160,31 @@ router.get('/getDocenteNome/:nomeParc', requireAuth, async function(req,res,next
     return
   } else {
     console.log(result)
+    res.send(result);
+  }
+})
+
+router.post('/atualizarDocente',requireAuth, async function(req,res,next){
+  let dados = {
+    id: req.body.id,
+    idDocente:req.body.idDocente,
+    sexo: req.body.sexo,
+    nome: req.body.nome,
+    email: req.body.email,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    idDocente: req.body.idDocente,
+    especializacao: req.body.especializacao,
+    emailInstitucional: req.body.emailInstitucional,
+    senha: req.body.senha
+  }
+
+  let result = await docenteController.updateDocente(dados);
+
+  if (typeof result === "string"){
+    res.status(409).send(result);
+    return;
+  } else {
     res.send(result);
   }
 })

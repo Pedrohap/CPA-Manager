@@ -185,8 +185,9 @@ $(document).ready(function () {
                         disableForm();
                     },
                     error: function (response){
+                        console.log(response.responseJSON)
                         $('#modalLabel').html("Erro");
-                        $('#modalTexto').html(response.responseText);
+                        $('#modalTexto').html(response.responseJSON.detail);
                         $('#modal').modal('show');;
                     }
                 })

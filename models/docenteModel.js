@@ -59,7 +59,7 @@ async function updateDocente(dados){
 
             await client.query(queryText,values);
 
-        }else {
+        } else {
             const queryText = 
             `UPDATE tbDocente
             SET docente_especializacao = $2,
@@ -69,7 +69,6 @@ async function updateDocente(dados){
 
             await client.query(queryText,values);
         }
-
 
         await client.query('COMMIT');
 

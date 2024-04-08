@@ -15,9 +15,9 @@ async function criarDocente(dados){
 
 async function updateDocente(dados){
     try{
-        await docenteModel.updateDocente(dados);
         await pessoaModel.updatePessoa(dados.sexo,dados.nome,dados.email,dados.cpf,dados.data_nascimento,dados.id);
-
+        await docenteModel.updateDocente(dados);
+        
         return true;
     }catch(error){
         console.log(error);
