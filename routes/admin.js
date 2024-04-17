@@ -4,6 +4,7 @@ var router = express.Router();
 const usuarioController = require('../controllers/usuarioController')
 const pessoaController = require('../controllers/pessoaController')
 const docenteController = require('../controllers/docenteController')
+const cursoController = require('../controllers/cursoController')
 
 const requireAuth = (req, res, next) => {
   if (req.session.user && req.session.user.acesso === 'admin') {
@@ -159,7 +160,6 @@ router.get('/getDocenteNome/:nomeParc', requireAuth, async function(req,res,next
     res.status(404).send(result.code);
     return
   } else {
-    console.log(result)
     res.send(result);
   }
 })
@@ -189,5 +189,175 @@ router.post('/atualizarDocente',requireAuth, async function(req,res,next){
   }
 })
 
+router.get('/cadastrarCurso' ,requireAuth, function (req, res, next){
+  res.render('cadastroCurso', {title: 'Cadastrar Curso'})
+});
+
+router.post('/cadastrarCurso',requireAuth, async function (req, res, next){
+  let dados = {
+    nome: req.body.nome,
+    sigla: req.body.sigla
+  }
+
+  let result = await cursoController.criarCurso(dados);
+
+  if (typeof result === "string"){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/atualizaCurso',requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    nome: req.body.nome,
+    sigla: req.body.sigla
+  }
+
+  let result = await cursoController.updateCurso(dados);
+
+  if (typeof result === "string"){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/removeCurso', requireAuth, async function (req, res, next){
+  let id = req.body.id;
+
+  let result = await cursoController.removeCurso(id);
+
+  if (typeof result === "string"){
+    res.status(404).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getCursoId/:id', requireAuth, async function (req, res, next){
+  let id = req.params.id;
+
+  let result = await cursoController.getCursoById(id);
+
+  if (result === "Curso não encontrado"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getCursoSigla/:sigla', requireAuth, async function (req, res, next){
+  let sigla = req.params.sigla;
+
+  let result = await cursoController.getCursoBySigla(sigla);
+
+  if (result === "Curso não encontrado"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getCursoNome/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await cursoController.getCursoNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+//TODO Cadastro do Aluno
+router.get('/cadastrarAluno', requireAuth, function (req, res, next){
+  res.render('cadastroAluno', {title: 'Cadastrar Aluno'})
+});
+
+router.post('/cadastrarDocente', requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    idDocente:req.body.idDocente,
+    sexo: req.body.sexo,
+    nome: req.body.nome,
+    email: req.body.email,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    idDocente: req.body.idDocente,
+    especializacao: req.body.especializacao,
+    emailInstitucional: req.body.emailInstitucional,
+    senha: req.body.senha
+  }
+
+  let result = await docenteController.criarDocente(dados);
+
+  if (typeof result === "string"){
+    res.status(409).send(result);
+    return;
+  }
+  res.send(result) ;
+});
+
+router.get('/getDocenteId/:id', requireAuth, async function(req,res,next) {
+  let id = req.params.id;
+
+  let result = await docenteController.getDocenteByID(id);
+
+  if (result === "Usuário não encontrado"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+})
+
+router.get('/getDocenteNome/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await docenteController.getDocenteNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    console.log(result)
+    res.send(result);
+  }
+})
+
+router.post('/atualizarDocente',requireAuth, async function(req,res,next){
+  let dados = {
+    id: req.body.id,
+    idDocente:req.body.idDocente,
+    sexo: req.body.sexo,
+    nome: req.body.nome,
+    email: req.body.email,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    idDocente: req.body.idDocente,
+    especializacao: req.body.especializacao,
+    emailInstitucional: req.body.emailInstitucional,
+    senha: req.body.senha
+  }
+
+  let result = await docenteController.updateDocente(dados);
+
+  if (typeof result === "string"){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+})
+//Fim TODO Cadastro do aluno
 
 module.exports = router;

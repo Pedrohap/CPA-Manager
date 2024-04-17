@@ -7,6 +7,10 @@ a {
   color: #00B7FF;
 }
 
+.scrollable-table{
+  overflow-y: scroll;
+}
+
 .centerDiv{
   position: absolute;
   top: 50%;
