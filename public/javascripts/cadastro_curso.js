@@ -77,17 +77,8 @@ $(document).ready(function () {
             }
 
             var formData = {
-                id: $("#id").val(),
-                idDocente: $("#idDocente").val(),
-                sexo: $("#sexo").val(),
+                sigla: $("#sigla").val(),
                 nome: $("#nome").val(),
-                email: $("#email").val(),
-                cpf: $("#cpf").val(),
-                data_nascimento: $("#data_nascimento").val(),
-                idDocente: $('#idDocente').val(),
-                especializacao: $('#especializacao').val(),
-                emailInstitucional: $('#emailInstitucional').val(),
-                senha: $('#senha').val()
             };
 
             $.ajax({
