@@ -6,12 +6,13 @@ $(document).ready(function () {
         limpaCampos();
         disableForm();
         $('#btnSalvar').hide();
-        $('#btnCancelar').hide()
+        $('#btnCancelar').hide();
+        $('#btnNovo').prop( "disabled", false );
     })
 
     //FUNÇÕES DA BARRA DE AUTO COMPLETAR
     $('#idBusca').blur(function(){
-        getDocenteByID();
+        getCursoBySigla();
     })
 
     $("#nomeBuscaTable").on("click", "tr", function() {
@@ -19,7 +20,7 @@ $(document).ready(function () {
         let nome = $(this).find("td:eq(1)").text();
         $('#idBusca').val(id);
         $('#nomeBusca').val(nome);
-        getDocenteByID();
+        getCursoBySigla();
         $('#nomeBuscaAutoFill').html('');
         $('#sugestionTable').hide();
     });
@@ -30,7 +31,7 @@ $(document).ready(function () {
         if (searchTerm.length >= 4) {
             $.ajax({
                 type: "GET",
-                url: `/admin/getDocenteNome/${searchTerm}`,
+                url: `/admin/getCursoNome/${searchTerm}`,
                 success: function (response) {
 
                     if (response.length > 0){
@@ -67,15 +68,6 @@ $(document).ready(function () {
             $("#btnSalvar").attr("disabled", "disabled");
             $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
 
-            //As senhas não conferem ou está vazia, erro é exibido
-            if($("#senhaConf").val() != $("#senha").val() && $("#senhaConf").val() != ""){
-                $('#modalLabel').html("Erro");
-                $('#modalTexto').html("As senhas digitadas não estão iguais!");
-                $('#modal').modal('show');
-                $("#btnSalvar").removeAttr("disabled").html("Salvar");
-                return
-            }
-
             var formData = {
                 sigla: $("#sigla").val(),
                 nome: $("#nome").val(),
@@ -83,11 +75,11 @@ $(document).ready(function () {
 
             $.ajax({
                 type: "POST",
-                url: "/admin/cadastrarDocente",
+                url: "/admin/cadastrarCurso",
                 data: formData,
                 success: function (response) {
                     $('#modalLabel').html("Sucesso")
-                    $('#modalTexto').html("Docente criada com sucesso")
+                    $('#modalTexto').html("Curso criado com sucesso")
                     $('#modal').modal('show')
                     limpaCampos();
                     disableForm();
@@ -111,38 +103,21 @@ $(document).ready(function () {
             $('#modalBtnConfirmar').click(function(){
                 $('#modalConfirm').modal('hide')
 
-                //As senhas não conferem ou está vazia, erro é exibido
-                if($("#senhaConf").val() != $("#senha").val()){
-                    $('#modalLabel').html("Erro");
-                    $('#modalTexto').html("As senhas digitadas não estão iguais!");
-                    $('#modal').modal('show');
-                    $("#btnSalvar").removeAttr("disabled").html("Salvar");
-                    return
-                }
-
                 $("#btnSalvar").attr("disabled", "disabled");
                 $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
 
                 var formData = {
                     id: $("#id").val(),
-                    idDocente: $("#idDocente").val(),
-                    sexo: $("#sexo").val(),
-                    nome: $("#nome").val(),
-                    email: $("#email").val(),
-                    cpf: $("#cpf").val(),
-                    data_nascimento: $("#data_nascimento").val(),
-                    idDocente: $('#idDocente').val(),
-                    especializacao: $('#especializacao').val(),
-                    emailInstitucional: $('#emailInstitucional').val(),
-                    senha: $('#senha').val()
+                    sigla: $("#sigla").val(),
+                    nome: $("#nome").val()
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/admin/atualizarDocente",
+                    url: "/admin/atualizaCurso",
                     data: formData,
                     success: function (response) {
                         $('#modalLabel').html("Sucesso")
-                        $('#modalTexto').html("Pessoa atualizada com sucesso")
+                        $('#modalTexto').html("Curso atualizado com sucesso")
                         $('#modal').modal('show')
                         limpaCampos();
                         disableForm();
@@ -161,39 +136,23 @@ $(document).ready(function () {
     $('#btnNovo').click(function (){
         $('#formAction').val("new");
         $('#btnNovo').prop( "disabled", true );
-        $('#id').prop( "disabled", false );
-        $('#idDocente').prop( "disabled", false );
-        $('#especializacao').prop( "disabled", false );
-        $('#emailInstitucional').prop( "disabled", false );
-        $('#senha').prop( "disabled", false );
-        $('#senhaConf').prop( "disabled", false );
-        $('#nome').prop( "disabled", false );
-        $('#sexo').prop( "disabled", false );
-        $('#email').prop( "disabled", false );
-        $('#cpf').prop( "disabled", false );
-        $('#data_nascimento').prop( "disabled", false );
+        $('#id').prop( "disabled", true );
+        $("#sigla").prop( "disabled", false );
+        $("#nome").prop( "disabled", false );
         $("#btnSalvar").removeAttr("disabled").html("Salvar");
         $('#btnSalvar').show();
-        $('#btnCancelar').show()
+        $('#btnCancelar').show();
     })
 
     $('#btnEditar').click(function (){
         $('#formAction').val("edit");
         $('#btnNovo').prop( "disabled", true );
         $('#id').prop( "disabled", true );
-        $('#idDocente').prop( "disabled", true );
-        $('#especializacao').prop( "disabled", false );
-        $('#emailInstitucional').prop( "disabled", false );
-        $('#senha').prop( "disabled", false );
-        $('#senhaConf').prop( "disabled", false );
-        $('#nome').prop( "disabled", false );
-        $('#sexo').prop( "disabled", false );
-        $('#email').prop( "disabled", false );
-        $('#cpf').prop( "disabled", false );
-        $('#data_nascimento').prop( "disabled", false );
+        $("#sigla").prop( "disabled", false );
+        $("#nome").prop( "disabled", false );
         $("#btnSalvar").removeAttr("disabled").html("Salvar");
         $('#btnSalvar').show();
-        $('#btnCancelar').show()
+        $('#btnCancelar').show();
     })
 
     $('#btnExcluir').click(function (){
@@ -210,7 +169,8 @@ $(document).ready(function () {
                 let id = $('#id').val();
                 $.ajax({
                     type: "POST",
-                    url: `/admin/excluirPessoaId/${id}`,
+                    url: `/admin/removeCurso`,
+                    data: id,
                     success: function (response) {
                         $('#modalLabel').html("Sucesso")
                         $('#modalTexto').html("Pessoa excluida com Sucesso")
@@ -229,21 +189,48 @@ $(document).ready(function () {
     })
 })
 
-function getCursoByID(){
+function getCursoBySigla(){
     let idBusca = $('#idBusca').val();
 
     $.ajax({
         type: "GET",
-        url: `/admin/getCursoId/${idBusca}`,
+        url: `/admin/getCursoSigla/${idBusca}`,
         success: function (response) {
-            $('#id').val(response.curso_id);
+            $('#id').val(response.id);
             $('#sigla').val(response.sigla);
             $('#nome').val(response.nome);
+            $('#nomeBusca').val(response.nome);
             $('#btnEditar').prop( "disabled", false )
+            $('#btnExcluir').prop( "disabled", false );
+            getCurriculosByCurso(response.id);
+            liberaAddCurriculo();
         },
         error: function (response){
             limpaCampos();
             $('#btnEditar').prop( "disabled", true )
+            $('#btnExcluir').prop( "disabled", true );
+
+        }
+    })
+}
+
+function getCurriculosByCurso(curso){
+    $.ajax({
+        type: "GET",
+        url: `/admin/getCurriculos/${curso}`,
+        success: function (response) {
+            if(response.length > 0 && response[0].curriculo_nome !== undefined){
+                let html;
+                for (let i = 0 ; i < response.length ; i++){
+                    html =+ `<tr><td>${response[i].curriculo_nome}</td><td><a class="btn btn-danger" action="removeCurriculo(${response[i].id})">Excluir</a></td></tr>`
+                }
+                $('#curriculosAutoFill').html(html)
+            } else {
+                $('#curriculosAutoFill').html("")
+            }
+        },
+        error: function (response){
+            $('#curriculosAutoFill').html("")
         }
     })
 }
@@ -261,7 +248,12 @@ function limpaCampos(){
     $('#id').val("");
     $('#sigla').val("");
     $('#nome').val("");
-    $('#btnEditar').prop( "disabled", true )
+    $('#nomeBusca').val("");
+    $('#idBusca').val("");
+    $('#btnEditar').prop( "disabled", true );
+    $('#btnExcluir').prop( "disabled", true );
+    $('#nomeCurriculo').prop( "disabled", true );
+    $('#btnSalvarCuriculo').prop( "disabled", true );
 }
 
 function geraTabela(response){
@@ -271,13 +263,22 @@ function geraTabela(response){
         maxLenght = response.length
     }
 
-    if (response != 'Usuário não encontrado'){
+    if (response != 'Curso não encontrado' || response[0].curso_sigla !== undefined){
         for (let i = 0 ; i < maxLenght ; i++){
-            html += `<tr><td>${response[i].id}</td><td>${response[i].nome}</td></tr>`
+            html += `<tr><td>${response[i].curso_sigla}</td><td>${response[i].curso_nome}</td></tr>`
         }
     } else{
         html = "";
     }
 
     return html;
+}
+
+function liberaAddCurriculo(){
+    $('#nomeCurriculo').prop( "disabled", false );
+    $('#btnSalvarCuriculo').prop( "disabled", false );
+}
+
+function removeCurriculo(idCurriculo){
+
 }

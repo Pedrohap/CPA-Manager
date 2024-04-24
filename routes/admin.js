@@ -201,7 +201,7 @@ router.post('/cadastrarCurso',requireAuth, async function (req, res, next){
 
   let result = await cursoController.criarCurso(dados);
 
-  if (typeof result === "string"){
+  if (result.hasOwnProperty('status') ){
     res.status(409).send(result);
     return;
   } else {
@@ -218,7 +218,7 @@ router.post('/atualizaCurso',requireAuth, async function (req, res, next){
 
   let result = await cursoController.updateCurso(dados);
 
-  if (typeof result === "string"){
+  if (result.hasOwnProperty('status') ){
     res.status(409).send(result);
     return;
   } else {
@@ -231,7 +231,7 @@ router.post('/removeCurso', requireAuth, async function (req, res, next){
 
   let result = await cursoController.removeCurso(id);
 
-  if (typeof result === "string"){
+  if (result.hasOwnProperty('status') ){
     res.status(404).send(result);
     return;
   } else {
@@ -257,7 +257,7 @@ router.get('/getCursoSigla/:sigla', requireAuth, async function (req, res, next)
 
   let result = await cursoController.getCursoBySigla(sigla);
 
-  if (result === "Curso não encontrado"){
+  if (result.hasOwnProperty('status') ){
     res.status(404).send('Recurso não encontrado');
     return;
   } else {
@@ -269,6 +269,48 @@ router.get('/getCursoNome/:nomeParc', requireAuth, async function(req,res,next) 
   let nomeParc = req.params.nomeParc;
 
   let result = await cursoController.getCursoNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+router.post('/criarCurriculo', requireAuth, async function(req, res,next) {
+  let dados = {
+    curso: req.body.idCurso,
+    nome: req.body.nomeCurriculo
+  }
+
+  let result = await cursoController.criarCurriculo(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+router.post('/removeCurriculo', requireAuth, async function(req, res,next) {
+  let id = req.body.idCuriculo;
+
+  let result = await cursoController.removeCurriculo(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+router.get('/getCurriculos/:id', requireAuth, async function(req, res,next) {
+  let id = req.params.id;
+
+  let result = await cursoController.getCurriculosBydId(id);
 
   if (result.hasOwnProperty('status') ){
     res.status(404).send(result.code);

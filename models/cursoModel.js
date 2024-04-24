@@ -14,7 +14,7 @@ async function criarCurso(dados){
     try {
         await client.query('BEGIN');
 
-        const queryText = 'INSERT INTO tbCuro(curso_sigla,curso_nome) VALUES ($1, $2)';
+        const queryText = 'INSERT INTO tbCurso (curso_sigla,curso_nome) VALUES ($1, $2)';
         const values = [dados.sigla,dados.nome];
         await client.query(queryText,values);
 
@@ -31,6 +31,7 @@ async function criarCurso(dados){
 
 async function updateCurso(dados){  
     const client = await pool.connect();
+    console.log(dados)
     
     try {
         await client.query('BEGIN');
@@ -38,7 +39,7 @@ async function updateCurso(dados){
         const queryText = 
         `UPDATE tbCurso
         SET curso_nome = $2,
-            curso_sigla = $3,
+            curso_sigla = $3
         WHERE curso_id = $1;`;
         const values = [dados.id,dados.nome,dados.sigla];
 
@@ -154,12 +155,80 @@ async function getCursoNomeParcial(entrada){
     }
 }
 
+//Curriculos Functions
+async function criarCurriculo(dados){
+    const client = await pool.connect();
+
+    try {
+        await client.query ('BEGIN');
+
+        const queryText = `INSERT INTO tbCurriculo(curriculo_curso,curriculo_nome) VALUES ($1,$2)`;
+        const values = [dados.curso,dados.nome];
+
+        await client.query(queryText,values);
+
+        await client.query('COMMIT');
+
+        return true;
+    }catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function removeCurriculo(id){
+    const client = await pool.connect();
+
+    try {
+        await client.query ('BEGIN');
+        const queryText = `DELETE FROM tbCurriculo WHERE curriculo_id = $1`;
+        const values = [id];
+
+        await client.query(queryText,values);
+        await client.query('COMMIT');
+
+        return true;
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function getCurriculosBydId(id){
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const queryText = 'SELECT *FROM tbCurriculo WHERE curriculo_curso = $1';
+        const values = [id];
+        const { rows } = await client.query(queryText, values);
+
+        if (rows.length === 0) {
+            return "Curriculo não encontrado";
+        }
+
+        return rows;
+    } catch (error) {
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
 module.exports = {
     criarCurso,
     updateCurso,
     removeCurso,
     getCursoById,
     getCursoBySigla,
-    getCursoNomeParcial
+    getCursoNomeParcial,
+    criarCurriculo,
+    removeCurriculo,
+    getCurriculosBydId
 }
 

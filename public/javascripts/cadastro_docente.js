@@ -283,11 +283,13 @@ function getDocenteByID(){
             $('#email').val(response.email);
             $('#cpf').val(response.cpf);
             $('#data_nascimento').val(new Date(response.data_nascimento).toISOString().split('T')[0]);
-            $('#btnEditar').prop( "disabled", false )
+            $('#btnEditar').prop( "disabled", false );
+            $('#btnExcluir').prop( "disabled", false );
         },
         error: function (response){
             limpaCampos();
-            $('#btnEditar').prop( "disabled", true )
+            $('#btnEditar').prop( "disabled", true );
+            $('#btnExcluir').prop( "disabled", true );
         }
     })
 }
@@ -325,6 +327,7 @@ function limpaCampos(){
     $('#cpf').val("");
     $('#data_nascimento').val("");
     $('#btnEditar').prop( "disabled", true )
+    $('#btnExcluir').prop( "disabled", true );
 }
 
 function geraTabela(response){
@@ -334,7 +337,7 @@ function geraTabela(response){
         maxLenght = response.length
     }
 
-    if (response != 'Usuário não encontrado'){
+    if (response != 'Usuário não encontrado' || response[0].id !== undefined){
         for (let i = 0 ; i < maxLenght ; i++){
             html += `<tr><td>${response[i].id}</td><td>${response[i].nome}</td></tr>`
         }

@@ -251,7 +251,7 @@ function geraTabela(response){
         maxLenght = response.length
     }
 
-    if (response != 'Usuário não encontrado'){
+    if (response != 'Usuário não encontrado' || response[0].id !== undefined){
         for (let i = 0 ; i < maxLenght ; i++){
             html += `<tr><td>${response[i].id}</td><td>${response[i].nome}</td></tr>`
         }
