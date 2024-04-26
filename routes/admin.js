@@ -295,7 +295,9 @@ router.post('/criarCurriculo', requireAuth, async function(req, res,next) {
 })
 
 router.post('/removeCurriculo', requireAuth, async function(req, res,next) {
-  let id = req.body.idCuriculo;
+  let id = req.body.idCurriculo;
+
+  console.log(id)
 
   let result = await cursoController.removeCurriculo(id);
 

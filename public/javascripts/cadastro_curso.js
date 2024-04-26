@@ -12,6 +12,7 @@ $(document).ready(function () {
 
     //FUNÇÕES DA BARRA DE AUTO COMPLETAR
     $('#idBusca').blur(function(){
+        $('#idBusca').val($('#idBusca').val().toUpperCase())
         getCursoBySigla();
     })
 
@@ -158,7 +159,7 @@ $(document).ready(function () {
     $('#btnExcluir').click(function (){
         if($('#id').val()!= ""){
             $('#modalLabelConfirm').html("Alerta de Exclusão")
-            $('#modalTextoConfirm').html(`Deseja realmente excluir a Pessoa ${$('#nome').val()}?`)
+            $('#modalTextoConfirm').html(`Deseja realmente excluir o curso de ${$('#nome').val()}?`)
             $('#modalBtnConfirmar').removeClass();
             $('#modalBtnConfirmar').addClass('btn btn-danger')
             $('#modalBtnConfirmar').html('Excluir')
@@ -166,14 +167,14 @@ $(document).ready(function () {
             
             $('#modalBtnConfirmar').click( function(){
                 $('#modalConfirm').modal('hide')
-                let id = $('#id').val();
+                let formData = {id: $('#id').val()}
                 $.ajax({
                     type: "POST",
                     url: `/admin/removeCurso`,
-                    data: id,
+                    data: formData,
                     success: function (response) {
                         $('#modalLabel').html("Sucesso")
-                        $('#modalTexto').html("Pessoa excluida com Sucesso")
+                        $('#modalTexto').html("Curso excluido com Sucesso")
                         $('#modal').modal('show')
                         limpaCampos();
                         disableForm();
@@ -187,6 +188,33 @@ $(document).ready(function () {
             })
         }
     })
+
+    $("#createCurriculoForm").submit(function (e) {
+        e.preventDefault();
+        let formData = {
+            idCurso: $("#id").val(),
+            nomeCurriculo: $("#nomeCurriculo").val()
+        }
+        $.ajax({
+            type: "POST",
+            url: `/admin/criarCurriculo`,
+            data: formData,
+            success: function (response) {
+                $('#modalLabel').html("Sucesso")
+                $('#modalTexto').html("Curriculo adicionado com Sucesso")
+                $('#modal').modal('show')
+                limpaCampos();
+                disableForm();
+            },
+            error: function (response){
+                $('#modalLabel').html("Erro");
+                $('#modalTexto').html(response.responseText);
+                $('#modal').modal('show');;
+            }
+        })
+    });
+
+    
 })
 
 function getCursoBySigla(){
@@ -196,14 +224,18 @@ function getCursoBySigla(){
         type: "GET",
         url: `/admin/getCursoSigla/${idBusca}`,
         success: function (response) {
-            $('#id').val(response.id);
-            $('#sigla').val(response.sigla);
-            $('#nome').val(response.nome);
-            $('#nomeBusca').val(response.nome);
-            $('#btnEditar').prop( "disabled", false )
-            $('#btnExcluir').prop( "disabled", false );
-            getCurriculosByCurso(response.id);
-            liberaAddCurriculo();
+            if(response !== "Curso não encontrado"){
+                $('#id').val(response.id);
+                $('#sigla').val(response.sigla);
+                $('#nome').val(response.nome);
+                $('#nomeBusca').val(response.nome);
+                $('#btnEditar').prop( "disabled", false )
+                $('#btnExcluir').prop( "disabled", false );
+                getCurriculosByCurso(response.id);
+                liberaAddCurriculo();
+            } else {
+                limpaCampos();
+            }
         },
         error: function (response){
             limpaCampos();
@@ -215,6 +247,7 @@ function getCursoBySigla(){
 }
 
 function getCurriculosByCurso(curso){
+    $('#curriculosAutoFill').html("")
     $.ajax({
         type: "GET",
         url: `/admin/getCurriculos/${curso}`,
@@ -222,7 +255,7 @@ function getCurriculosByCurso(curso){
             if(response.length > 0 && response[0].curriculo_nome !== undefined){
                 let html;
                 for (let i = 0 ; i < response.length ; i++){
-                    html =+ `<tr><td>${response[i].curriculo_nome}</td><td><a class="btn btn-danger" action="removeCurriculo(${response[i].id})">Excluir</a></td></tr>`
+                    html += `<tr><td>${response[i].curriculo_nome}</td><td><a class="btn btn-danger btn-sm" onclick="removeCurriculo(${response[i].curriculo_id},${$('#id').val()})">Excluir</a></td></tr>`
                 }
                 $('#curriculosAutoFill').html(html)
             } else {
@@ -246,10 +279,12 @@ function disableForm(){
 
 function limpaCampos(){
     $('#id').val("");
+    $('#idBusca').val("");
     $('#sigla').val("");
     $('#nome').val("");
     $('#nomeBusca').val("");
     $('#idBusca').val("");
+    $('#curriculosAutoFill').html("")
     $('#btnEditar').prop( "disabled", true );
     $('#btnExcluir').prop( "disabled", true );
     $('#nomeCurriculo').prop( "disabled", true );
@@ -279,6 +314,32 @@ function liberaAddCurriculo(){
     $('#btnSalvarCuriculo').prop( "disabled", false );
 }
 
-function removeCurriculo(idCurriculo){
+function removeCurriculo(idCurriculo,idCurso){
+    $('#modalLabelConfirm').html("Alerta de Exclusão")
+    $('#modalTextoConfirm').html(`Deseja realmente excluir este curriculo?`)
+    $('#modalBtnConfirmar').removeClass();
+    $('#modalBtnConfirmar').addClass('btn btn-danger')
+    $('#modalBtnConfirmar').html('Excluir')
+    $('#modalConfirm').modal('show')
 
+    $('#modalBtnConfirmar').click( function(){
+        $('#modalConfirm').modal('hide')
+        let formData = {idCurriculo: idCurriculo}
+        $.ajax({
+            type: "POST",
+            url: `/admin/removeCurriculo`,
+            data: formData,
+            success: function (response) {
+                $('#modalLabel').html("Sucesso")
+                $('#modalTexto').html("Curriculo excluido com Sucesso")
+                $('#modal').modal('show')
+                getCurriculosByCurso(idCurso);
+            },
+            error: function (response){
+                $('#modalLabel').html("Erro");
+                $('#modalTexto').html(response.responseText);
+                $('#modal').modal('show');;
+            }
+        })
+    })
 }
