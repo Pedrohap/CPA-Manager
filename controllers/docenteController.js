@@ -51,7 +51,12 @@ async function loginDocente(entrada,senha){
 }
 
 async function removeDocente(entrada){
-    return await docenteModel.removeDocente(entrada);
+    try{
+        return await docenteModel.removeDocente(entrada);
+    }catch(error){
+        console.log(error);
+        return {status: "error", codigo: error.code}
+    }
 }
 
 module.exports = {

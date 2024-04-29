@@ -134,7 +134,7 @@ async function removeDocente(entrada){
     try {
       await client.query('BEGIN');
   
-      const queryText = 'DELETE FROM tbDocente WHERE docente_email_institucional = $1 or docente_id = $1';
+      const queryText = 'DELETE FROM tbDocente WHERE docente_id = $1';
       const values = [entrada];
       await client.query(queryText, values);
   

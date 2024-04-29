@@ -5,6 +5,7 @@ const usuarioController = require('../controllers/usuarioController')
 const pessoaController = require('../controllers/pessoaController')
 const docenteController = require('../controllers/docenteController')
 const cursoController = require('../controllers/cursoController')
+const alunoController = require('../controllers/alunoController')
 
 const requireAuth = (req, res, next) => {
   if (req.session.user && req.session.user.acesso === 'admin') {
@@ -327,6 +328,87 @@ router.get('/cadastrarAluno', requireAuth, function (req, res, next){
   res.render('cadastroAluno', {title: 'Cadastrar Aluno'})
 });
 
+router.post('/cadastrarAluno', requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    idAluno:req.body.idAluno,
+    sexo: req.body.sexo,
+    nome: req.body.nome,
+    email: req.body.email,
+    cpf: req.body.cpf,
+    data_nascimento: req.body.data_nascimento,
+    curso: req.body.curso,
+    curriculo: req.body.curriculo,
+    senha: req.body.senha
+  }
+
+  let result = await alunoController.criarAluno(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+router.post('/atualizaAluno',requireAuth, async function (req, res, next){
+  let dados = {
+    idAluno:req.body.idAluno,
+    curso: req.body.curso,
+    curriculo: req.body.curriculo,
+    senha: req.body.senha
+  }
+
+  let result = await alunoController.updateAluno(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/removeAluno', requireAuth, async function (req, res, next){
+  let id = req.body.id;
+
+  let result = await alunoController.removeAluno(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getAlunoId/:id', requireAuth, async function (req, res, next){
+  let id = req.params.id;
+
+  let result = await alunoController.getAlunoByID(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getCursoNome/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await alunoController.getAlunoNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+
 router.post('/cadastrarDocente', requireAuth, async function (req, res, next){
   let dados = {
     id: req.body.id,
@@ -336,7 +418,6 @@ router.post('/cadastrarDocente', requireAuth, async function (req, res, next){
     email: req.body.email,
     cpf: req.body.cpf,
     data_nascimento: req.body.data_nascimento,
-    idDocente: req.body.idDocente,
     especializacao: req.body.especializacao,
     emailInstitucional: req.body.emailInstitucional,
     senha: req.body.senha
