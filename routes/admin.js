@@ -396,7 +396,7 @@ router.get('/getAlunoId/:id', requireAuth, async function (req, res, next){
   }
 });
 
-router.get('/getCursoNome/:nomeParc', requireAuth, async function(req,res,next) {
+router.get('/getAlunoNome/:nomeParc', requireAuth, async function(req,res,next) {
   let nomeParc = req.params.nomeParc;
 
   let result = await alunoController.getAlunoNomeParcial(nomeParc);
@@ -404,81 +404,6 @@ router.get('/getCursoNome/:nomeParc', requireAuth, async function(req,res,next) 
   if (result.hasOwnProperty('status') ){
     res.status(404).send(result.code);
     return
-  } else {
-    res.send(result);
-  }
-})
-
-router.post('/cadastrarDocente', requireAuth, async function (req, res, next){
-  let dados = {
-    id: req.body.id,
-    idDocente:req.body.idDocente,
-    sexo: req.body.sexo,
-    nome: req.body.nome,
-    email: req.body.email,
-    cpf: req.body.cpf,
-    data_nascimento: req.body.data_nascimento,
-    especializacao: req.body.especializacao,
-    emailInstitucional: req.body.emailInstitucional,
-    senha: req.body.senha
-  }
-
-  let result = await docenteController.criarDocente(dados);
-
-  if (typeof result === "string"){
-    res.status(409).send(result);
-    return;
-  }
-  res.send(result) ;
-});
-
-router.get('/getDocenteId/:id', requireAuth, async function(req,res,next) {
-  let id = req.params.id;
-
-  let result = await docenteController.getDocenteByID(id);
-
-  if (result === "Usuário não encontrado"){
-    res.status(404).send('Recurso não encontrado');
-    return;
-  } else {
-    res.send(result);
-  }
-})
-
-router.get('/getDocenteNome/:nomeParc', requireAuth, async function(req,res,next) {
-  let nomeParc = req.params.nomeParc;
-
-  let result = await docenteController.getDocenteNomeParcial(nomeParc);
-
-  if (result.hasOwnProperty('status') ){
-    res.status(404).send(result.code);
-    return
-  } else {
-    console.log(result)
-    res.send(result);
-  }
-})
-
-router.post('/atualizarDocente',requireAuth, async function(req,res,next){
-  let dados = {
-    id: req.body.id,
-    idDocente:req.body.idDocente,
-    sexo: req.body.sexo,
-    nome: req.body.nome,
-    email: req.body.email,
-    cpf: req.body.cpf,
-    data_nascimento: req.body.data_nascimento,
-    idDocente: req.body.idDocente,
-    especializacao: req.body.especializacao,
-    emailInstitucional: req.body.emailInstitucional,
-    senha: req.body.senha
-  }
-
-  let result = await docenteController.updateDocente(dados);
-
-  if (typeof result === "string"){
-    res.status(409).send(result);
-    return;
   } else {
     res.send(result);
   }
