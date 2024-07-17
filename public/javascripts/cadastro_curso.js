@@ -247,7 +247,7 @@ function getCursoBySigla(){
 }
 
 function getCurriculosByCurso(curso){
-    $('#curriculo').html("")
+    $('#curriculosAutoFill').html("")
     $.ajax({
         type: "GET",
         url: `/admin/getCurriculos/${curso}`,
@@ -255,19 +255,18 @@ function getCurriculosByCurso(curso){
             if(response.length > 0 && response[0].curriculo_nome !== undefined){
                 let html;
                 for (let i = 0 ; i < response.length ; i++){
-                    html += `<option value="${response[i].curriculo_id}">${response[i].curriculo_nome}</option>"`
+                    html += `<tr><td>${response[i].curriculo_nome}</td><td><a class="btn btn-danger btn-sm" onclick="removeCurriculo(${response[i].curriculo_id},${$('#id').val()})">Excluir</a></td></tr>`
                 }
-                $('#curriculo').html(html)
+                $('#curriculosAutoFill').html(html)
             } else {
-                $('#curriculo').html("")
+                $('#curriculosAutoFill').html("")
             }
         },
         error: function (response){
-            $('#curriculo').html("")
+            $('#curriculosAutoFill').html("")
         }
     })
 }
-
 
 function disableForm(){
     $('#id').prop( "disabled", true );

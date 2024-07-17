@@ -13,8 +13,15 @@ CREATE TABLE tbCurso(
     curso_nome VARCHAR(255)
 );
 
+CREATE TABLE tbCurriculo (
+    curriculo_id SERIAL PRIMARY KEY,
+    curriculo_curso INT REFERENCES tbCurso(curso_id),
+    curriculo_nome VARCHAR(100)
+);
+
 CREATE TABLE tbAluno(
     aluno_id SERIAL PRIMARY KEY,
+    aluno_serie INT,
     aluno_pessoa INT REFERENCES tbPessoa(pessoa_id),
     aluno_curso INT REFERENCES tbCurso(curso_id),
     aluno_curriculo INT REFERENCES tbCurriculo(curriculo_id),
@@ -54,12 +61,6 @@ CREATE TABLE tbTurma (
     turma_ano INT
 );
 
-CREATE TABLE tbCurriculo (
-    curriculo_id SERIAL PRIMARY KEY,
-    curriculo_curso INT REFERENCES tbCurso(curso_id),
-    curriculo_nome VARCHAR(100)
-);
-
 CREATE TABLE tbQuestao (
     questao_id SERIAL PRIMARY KEY,
     questao_pergunta VARCHAR(255),
@@ -96,7 +97,7 @@ SELECT aluno_id as id, tbpessoa.pessoa_nome as nome
 FROM tbaluno JOIN tbpessoa ON aluno_pessoa = tbpessoa.pessoa_id;
 
 CREATE VIEW aluno_dados AS
-SELECT aluno_id AS aluno_id , aluno_pessoa AS id ,t3.curso_sigla AS curso_sigla, t3.curso_nome AS curso_nome, t4.curriculo_nome AS curriculo ,t2.pessoa_cpf AS cpf, t2.pessoa_email AS email, t2.pessoa_sexo AS sexo, t2.pessoa_nome AS nome, t2.pessoa_data_nascimento AS data_nascimento
+SELECT aluno_id AS aluno_id, aluno_serie AS aluno_serie, aluno_pessoa AS id ,t3.curso_sigla AS curso_sigla, t3.curso_nome AS curso_nome, t4.curriculo_nome AS curriculo ,t2.pessoa_cpf AS cpf, t2.pessoa_email AS email, t2.pessoa_sexo AS sexo, t2.pessoa_nome AS nome, t2.pessoa_data_nascimento AS data_nascimento
 FROM tbaluno t 
 INNER JOIN tbpessoa t2 ON t.aluno_pessoa = t2.pessoa_id
 INNER JOIN tbcurso t3 ON t.aluno_curso = t3.curso_id

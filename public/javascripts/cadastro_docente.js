@@ -297,6 +297,7 @@ function getDocenteByID(){
 
 function disableForm(){
     $('#btnNovo').prop( "disabled", false );
+    $('#btnNovo').prop( "disabled", false );
     $('#id').prop( "disabled", true );
     $('#idDocente').prop( "disabled", true );
     $('#especializacao').prop( "disabled", true );

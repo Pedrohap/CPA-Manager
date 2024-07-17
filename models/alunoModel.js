@@ -2,8 +2,9 @@ const pool = require('../config/database')
 const bcrypt = require('bcrypt');
 
 class Aluno{
-    constructor(id,pessoa,curso,curriculo,senha_hash,salt){
+    constructor(id,serie,pessoa,curso,curriculo,senha_hash,salt){
         this.id = id;
+        this.serie = serie;
         this.pessoa = pessoa;
         this.curso = curso;
         this.curriculo = curriculo;
@@ -22,8 +23,8 @@ async function criarAluno(dados){
     try{
         await client.query('BEGIN');
 
-        const queryText = 'INSERT INTO tbAluno (aluno_id,aluno_pessoa,aluno_curso,aluno_curriculo,senha_hash,salt) VALUES ($1, $2, $3, $4, $5, $6)';
-        const values = [dados.idAluno,dados.pessoa,dados.curso,dados.curriculo,senhaHash,salt]
+        const queryText = 'INSERT INTO tbAluno (aluno_id,aluno_serie,aluno_pessoa,aluno_curso,aluno_curriculo,senha_hash,salt) VALUES ($1, $2, $3, $4, $5, $6)';
+        const values = [dados.idAluno,dados.serie,dados.pessoa,dados.curso,dados.curriculo,senhaHash,salt]
         await client.query(queryText,values);
         
         await client.query('COMMIT');
@@ -54,8 +55,9 @@ async function updateAluno(dados){
                 aluno_curriculo = $3,
                 senha_hash = $4,
                 salt = $5
+                aluno_serie = $6
             WHERE aluno_id = $1;`;
-            const values = [dados.idAluno,dados.curso,dados.curriculo,senhaHash,salt];
+            const values = [dados.idAluno,dados.curso,dados.curriculo,senhaHash,salt,dados.serie];
 
             await client.query(queryText,values);
 
@@ -64,8 +66,9 @@ async function updateAluno(dados){
             `UPDATE tbAluno
             SET aluno_curso = $2,
                 aluno_curriculo = $3
+                aluno_serie = $4
             WHERE aluno_id = $1;`;
-            const values = [dados.idAluno,dados.curso,dados.curriculo];
+            const values = [dados.idAluno,dados.curso,dados.curriculo,dados.serie];
 
             await client.query(queryText,values);
         }

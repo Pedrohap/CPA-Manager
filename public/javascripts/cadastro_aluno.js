@@ -59,7 +59,7 @@ $(document).ready(function () {
 
     //FIM DAS FUNÇÕES DA BARRA DE AUTO COMPLETAR
 
-    $("#createDocenteForm").submit(function (e) {
+    $("#createAlunoForm").submit(function (e) {
         e.preventDefault();
 
         if ($('#formAction').val() === 'new'){
@@ -86,6 +86,7 @@ $(document).ready(function () {
                 data_nascimento: $("#data_nascimento").val(),
                 curso: $('#curso').val(),
                 curriculo: $('#curriculo').val(),
+                serie: $('#serie').val(),
                 senha: $('#senha').val()
             };
 
@@ -141,6 +142,7 @@ $(document).ready(function () {
                     data_nascimento: $("#data_nascimento").val(),
                     curso: $('#curso').val(),
                     curriculo: $('#curriculo').val(),
+                    serie: $('#serie').val(),
                     senha: $('#senha').val()
                 };
                 $.ajax({
@@ -173,6 +175,7 @@ $(document).ready(function () {
         $('#siglaCurso').prop( "disabled", false );
         $('#curso').prop( "disabled", false );
         $('#curriculo').prop( "disabled", false );
+        $('#serie').prop( "disabled", false );
         $('#cpf').prop( "disabled", false );
         $('#sexo').prop( "disabled", false );
         $('#email').prop( "disabled", false );
@@ -193,6 +196,7 @@ $(document).ready(function () {
         $('#siglaCurso').prop( "disabled", false );
         $('#curso').prop( "disabled", false );
         $('#curriculo').prop( "disabled", false );
+        $('#serie').prop( "disabled", false );
         $('#cpf').prop( "disabled", false );
         $('#sexo').prop( "disabled", false );
         $('#email').prop( "disabled", false );
@@ -349,6 +353,7 @@ function getAlunoByID(){
 
 
 function disableForm(){
+    $('#btnNovo').prop( "disabled", false );
     $('#idAluno').prop( "disabled", true );
     $('#id').prop( "disabled", true );
     $('#siglaCurso').prop( "disabled", true );
@@ -361,6 +366,7 @@ function disableForm(){
     $('#data_nascimento').prop( "disabled", true );
     $('#senha').prop( "disabled", true );
     $('#senhaConf').prop( "disabled", true );
+    $('#serie').prop( "disabled", true );
     $('#btnSalvar').hide()
     $('#btnCancelar').hide()
 }
@@ -378,6 +384,7 @@ function limpaCampos(){
     $('#data_nascimento').val("");
     $('#senha').val("");
     $('#senhaConf').val("");
+    $('#serie').val ("");
     $('#btnEditar').prop( "disabled", true )
     $('#btnExcluir').prop( "disabled", true );
 }
@@ -455,6 +462,29 @@ function getCursoBySigla(){
         error: function (response){
             $('#siglaCurso').val("");
             $('#curso').val("");
+        }
+    })
+}
+
+
+function getCurriculosByCurso(curso){
+    $('#curriculo').html("")
+    $.ajax({
+        type: "GET",
+        url: `/admin/getCurriculos/${curso}`,
+        success: function (response) {
+            if(response.length > 0 && response[0].curriculo_nome !== undefined){
+                let html;
+                for (let i = 0 ; i < response.length ; i++){
+                    html += `<option value="${response[i].curriculo_id}">${response[i].curriculo_nome}</option>"`
+                }
+                $('#curriculo').html(html)
+            } else {
+                $('#curriculo').html("")
+            }
+        },
+        error: function (response){
+            $('#curriculo').html("")
         }
     })
 }
