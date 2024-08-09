@@ -6,6 +6,7 @@ const pessoaController = require('../controllers/pessoaController')
 const docenteController = require('../controllers/docenteController')
 const cursoController = require('../controllers/cursoController')
 const alunoController = require('../controllers/alunoController')
+const disciplinaController = require('../controllers/disciplinaController')
 
 const requireAuth = (req, res, next) => {
   if (req.session.user && req.session.user.acesso === 'admin') {
@@ -190,6 +191,7 @@ router.post('/atualizarDocente',requireAuth, async function(req,res,next){
   }
 })
 
+//Cadastro de Curso
 router.get('/cadastrarCurso' ,requireAuth, function (req, res, next){
   res.render('cadastroCurso', {title: 'Cadastrar Curso'})
 });
@@ -323,7 +325,9 @@ router.get('/getCurriculos/:id', requireAuth, async function(req, res,next) {
   }
 })
 
-//TODO Cadastro do Aluno
+//FIM Cadastro de Curso
+
+//Cadastro do Aluno
 router.get('/cadastrarAluno', requireAuth, function (req, res, next){
   res.render('cadastroAluno', {title: 'Cadastrar Aluno'})
 });
@@ -408,6 +412,84 @@ router.get('/getAlunoNome/:nomeParc', requireAuth, async function(req,res,next) 
     res.send(result);
   }
 })
-//Fim TODO Cadastro do aluno
+//Fim Cadastro do aluno
+
+
+//Cadastro de Disciplina
+router.get('/cadastrarDisciplina' ,requireAuth, function (req, res, next){
+  res.render('cadastroDisciplina', {title: 'Cadastrar Disciplina'})
+});
+
+router.post('/cadastrarDisciplina',requireAuth, async function (req, res, next){
+  let dados = {
+    nome: req.body.nome,
+    id: req.body.id
+  }
+
+  let result = await disciplinaController.criarDisciplina(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/atualizaDisciplina',requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    nome: req.body.nome,
+  }
+
+  let result = await disciplinaController.updateDisciplina(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/removeDisciplina', requireAuth, async function (req, res, next){
+  let id = req.body.id;
+
+  let result = await disciplinaController.removeDisciplina(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getDisciplinaId/:id', requireAuth, async function (req, res, next){
+  let id = req.params.id;
+
+  let result = await disciplinaController.getDisciplinaById(id);
+
+  if (result === "Disciplina não encontrada"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getDisciplinaNome/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await disciplinaController.getDisciplinaNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result.code);
+    return
+  } else {
+    res.send(result);
+  }
+})
+//FIM
 
 module.exports = router;

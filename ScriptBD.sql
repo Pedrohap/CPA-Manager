@@ -61,6 +61,11 @@ CREATE TABLE tbTurma (
     turma_ano INT
 );
 
+CREATE TABLE tbTurma_aluno (
+    aluno_id INT REFERENCES tbAluno(aluno_id),
+    turma_id INT REFERENCES tbTUrma(turma_id)
+);
+
 CREATE TABLE tbQuestao (
     questao_id SERIAL PRIMARY KEY,
     questao_pergunta VARCHAR(255),
