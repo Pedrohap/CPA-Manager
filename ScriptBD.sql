@@ -59,6 +59,7 @@ CREATE TABLE tbTurma (
     turma_nome VARCHAR(100),
     turma_semestre INT,
     turma_ano INT
+    UNIQUE (turma_docente,turma_disciplina,turma_nome,turma_semestre,turma_ano)
 );
 
 CREATE TABLE tbTurma_aluno (
@@ -66,23 +67,28 @@ CREATE TABLE tbTurma_aluno (
     turma_id INT REFERENCES tbTUrma(turma_id)
 );
 
-CREATE TABLE tbQuestao (
-    questao_id SERIAL PRIMARY KEY,
-    questao_pergunta VARCHAR(255),
-    questao_resposta VARCHAR(255)
-);
-
 CREATE TABLE tbForm (
     form_id SERIAL PRIMARY KEY,
     criado_por INT REFERENCES tbUsuario(usuario_id),
+    turma_id INT REFERENCES tbTurma(turma_id),
     form_nome VARCHAR(255),
     isOpen BOOLEAN NOT NULL
 );
 
-CREATE TABLE tbQuestao_form(
-    form_id INT REFERENCES tbForm(form_id),
-    questao_id INT REFERENCES tbQuestao(questao_id)
+CREATE TABLE tbQuestao (
+    questao_id SERIAL PRIMARY KEY,
+    form_id INT REFERENCES tbForm(form_id) ON DELETE CASCADE,
+    questao_tipo VARCHAR(255),
+    questao_pergunta VARCHAR(255),
 );
+
+CREATE TABLE tbQuestao_resposta(
+    questao_id INT REFERENCES tbQuestao(questao_id) ON DELETE CASCADE,
+    questao_resposta VARCHAR(255),
+    aluno_id INT REFERENCES tbAluno(aluno_id),
+    PRIMARY KEY (questao_id, aluno_id),
+    resposta_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
 
 CREATE VIEW pessoa_dados_basicos AS
 SELECT pessoa_id as id, pessoa_nome as nome
@@ -102,7 +108,7 @@ SELECT aluno_id as id, tbpessoa.pessoa_nome as nome
 FROM tbaluno JOIN tbpessoa ON aluno_pessoa = tbpessoa.pessoa_id;
 
 CREATE VIEW aluno_dados AS
-SELECT aluno_id AS aluno_id, aluno_serie AS aluno_serie, aluno_pessoa AS id ,t3.curso_sigla AS curso_sigla, t3.curso_nome AS curso_nome, t4.curriculo_nome AS curriculo ,t2.pessoa_cpf AS cpf, t2.pessoa_email AS email, t2.pessoa_sexo AS sexo, t2.pessoa_nome AS nome, t2.pessoa_data_nascimento AS data_nascimento
+SELECT aluno_id AS aluno_id, aluno_serie AS aluno_serie, aluno_pessoa AS id ,t3.curso_sigla AS curso_sigla, t3.curso_nome AS curso_nome, t4.curriculo_nome AS curriculo, t4.curriculo_id AS curriculo_id ,t2.pessoa_cpf AS cpf, t2.pessoa_email AS email, t2.pessoa_sexo AS sexo, t2.pessoa_nome AS nome, t2.pessoa_data_nascimento AS data_nascimento
 FROM tbaluno t 
 INNER JOIN tbpessoa t2 ON t.aluno_pessoa = t2.pessoa_id
 INNER JOIN tbcurso t3 ON t.aluno_curso = t3.curso_id

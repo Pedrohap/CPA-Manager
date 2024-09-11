@@ -7,6 +7,7 @@ const docenteController = require('../controllers/docenteController')
 const cursoController = require('../controllers/cursoController')
 const alunoController = require('../controllers/alunoController')
 const disciplinaController = require('../controllers/disciplinaController')
+const turmaController = require('../controllers/turmaController')
 
 const requireAuth = (req, res, next) => {
   if (req.session.user && req.session.user.acesso === 'admin') {
@@ -336,8 +337,7 @@ router.post('/cadastrarAluno', requireAuth, async function (req, res, next){
   let dados = {
     id: req.body.id,
     idAluno:req.body.idAluno,
-    sexo: req.body.sexo,
-    nome: req.body.nome,
+    serie: req.body.serie,
     email: req.body.email,
     cpf: req.body.cpf,
     data_nascimento: req.body.data_nascimento,
@@ -484,12 +484,168 @@ router.get('/getDisciplinaNome/:nomeParc', requireAuth, async function(req,res,n
   let result = await disciplinaController.getDisciplinaNomeParcial(nomeParc);
 
   if (result.hasOwnProperty('status') ){
-    res.status(404).send(result.code);
+    res.status(404).send('Recurso não encontrado');
     return
   } else {
     res.send(result);
   }
 })
 //FIM
+
+
+//Cadastro de Turma
+router.get('/cadastrarTurma' ,requireAuth, function (req, res, next){
+  res.render('cadastroTurma', {title: 'Cadastrar Turma'})
+});
+
+router.post('/cadastrarTurma',requireAuth, async function (req, res, next){
+  let dados = {
+    docente: req.body.docente,
+    disciplina: req.body.disciplina,
+    nome: req.body.nome,
+    ano: req.body.ano,
+    semestre: req.body.semestre,
+  }
+
+  let result = await turmaController.criarTurma(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getTurmaNomeParc/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await turmaController.getTurmaNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send('Recurso não encontrado');
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+router.post('/atualizaTurma',requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    docente: req.body.docente,
+    disciplina: req.body.disciplina,
+    nome: req.body.nome,
+    ano: req.body.ano,
+    semestre: req.body.semestre,
+  }
+
+  let result = await turmaController.updateTurma(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/removeTurma', requireAuth, async function (req, res, next){
+  let id = req.body.id;
+
+  let result = await turmaController.removeTurma(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getTurmaId/:id', requireAuth, async function (req, res, next){
+  let id = req.params.id;
+
+  let result = await turmaController.getTurmaById(id);
+
+  if (result === "Turma não encontrada"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/getTurmaFiltros', requireAuth, async function(req,res,next) {
+  let dados = {
+    disciplina: req.body.disciplina,
+    semestre: req.body.semestre,
+    ano: req.body.ano,
+    docente: req.body.docente
+  }
+
+  let result = await turmaController.getTurmasByFiltros(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send('Recurso não encontrado');
+    return
+  } else {
+    res.send(result);
+  }
+})
+//FIM
+
+
+//Rotas de Aluno-Turma
+router.get('/cadastrarAlunoTurma',requireAuth, async function (req, res, next){
+  res.render('cadastroTurmaAluno', {title: 'Matricular Aluno'})
+});
+
+router.post('/addAlunoTurma',requireAuth, async function (req, res, next){
+  let dados = {
+    aluno_id: req.body.alunoId,
+    turma_id: req.body.turmaId
+  }
+
+  let result = await turmaController.addAlunoTurma(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/removeAlunoTurma', requireAuth, async function (req, res, next){
+  let dados = {
+    aluno: req.body.alunoId,
+    turma: req.body.turmaId
+  }
+
+  let result = await turmaController.removeAlunoTurma(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getAlunosTurma/:id', requireAuth, async function(req,res,next) {
+  let id = req.params.id;
+
+  let result = await turmaController.getAlunosTurma(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send('Recurso não encontrado');
+    return
+  } else {
+    res.send(result);
+  }
+})
+//FIM
+
 
 module.exports = router;

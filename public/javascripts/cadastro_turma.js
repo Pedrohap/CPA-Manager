@@ -11,7 +11,7 @@ $(document).ready(function () {
 
     //FUNÇÕES DA BARRA DE AUTO COMPLETAR
     $('#idBusca').blur(function(){
-        getDocenteByID();
+        getTurmaByID();
     })
 
     $("#nomeBuscaTable").on("click", "tr", function() {
@@ -19,7 +19,7 @@ $(document).ready(function () {
         let nome = $(this).find("td:eq(1)").text();
         $('#idBusca').val(id);
         $('#nomeBusca').val(nome);
-        getDocenteByID();
+        getTurmaByID();
         $('#nomeBuscaAutoFill').html('');
         $('#sugestionTable').hide();
     });
@@ -30,7 +30,7 @@ $(document).ready(function () {
         if (searchTerm.length >= 4) {
             $.ajax({
                 type: "GET",
-                url: `/admin/getDocenteNome/${searchTerm}`,
+                url: `/admin/getTurmaNomeParc/${searchTerm}`,
                 success: function (response) {
 
                     if (response.length > 0){
@@ -59,7 +59,7 @@ $(document).ready(function () {
 
     //FIM DAS FUNÇÕES DA BARRA DE AUTO COMPLETAR
 
-    $("#createDocenteForm").submit(function (e) {
+    $("#createTurmaForm").submit(function (e) {
         e.preventDefault();
 
         if ($('#formAction').val() === 'new'){
@@ -77,26 +77,20 @@ $(document).ready(function () {
             }
 
             var formData = {
-                id: $("#id").val(),
-                idDocente: $("#idDocente").val(),
-                sexo: $("#sexo").val(),
-                nome: $("#nome").val(),
-                email: $("#email").val(),
-                cpf: $("#cpf").val(),
-                data_nascimento: $("#data_nascimento").val(),
-                idDocente: $('#idDocente').val(),
-                especializacao: $('#especializacao').val(),
-                emailInstitucional: $('#emailInstitucional').val(),
-                senha: $('#senha').val()
+                nome: $('#nome').val(),
+                ano: $('#ano').val(),
+                semestre: $('#semestre').val(),
+                docente: $('#idDocente').val(),
+                disciplina: $('#idDiciplina').val()
             };
 
             $.ajax({
                 type: "POST",
-                url: "/admin/cadastrarDocente",
+                url: "/admin/cadastrarTurma",
                 data: formData,
                 success: function (response) {
                     $('#modalLabel').html("Sucesso")
-                    $('#modalTexto').html("Docente criada com sucesso")
+                    $('#modalTexto').html("Aluno adicionado com sucesso")
                     $('#modal').modal('show')
                     limpaCampos();
                     disableForm();
@@ -111,7 +105,7 @@ $(document).ready(function () {
 
         } else if ($('#formAction').val() === 'edit'){
             $('#modalLabelConfirm').html("Alerta de Alteração")
-            $('#modalTextoConfirm').html(`Deseja realmente estas alterações?`)
+            $('#modalTextoConfirm').html(`Deseja realmente aplicar estas alterações?`)
             $('#modalBtnConfirmar').removeClass();
             $('#modalBtnConfirmar').addClass('btn btn-danger')
             $('#modalBtnConfirmar').html('Alterar')
@@ -134,24 +128,19 @@ $(document).ready(function () {
 
                 var formData = {
                     id: $("#id").val(),
-                    idDocente: $("#idDocente").val(),
-                    sexo: $("#sexo").val(),
-                    nome: $("#nome").val(),
-                    email: $("#email").val(),
-                    cpf: $("#cpf").val(),
-                    data_nascimento: $("#data_nascimento").val(),
-                    idDocente: $('#idDocente').val(),
-                    especializacao: $('#especializacao').val(),
-                    emailInstitucional: $('#emailInstitucional').val(),
-                    senha: $('#senha').val()
+                    nome: $('#nome').val(),
+                    ano: $('#ano').val(),
+                    semestre: $('#semestre').val(),
+                    docente: $('#idDocente').val(),
+                    disciplina: $('#idDiciplina').val()
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/admin/atualizarDocente",
+                    url: "/admin/atualizaTurma",
                     data: formData,
                     success: function (response) {
                         $('#modalLabel').html("Sucesso")
-                        $('#modalTexto').html("Pessoa atualizada com sucesso")
+                        $('#modalTexto').html("Aluno atualizado com sucesso")
                         $('#modal').modal('show')
                         limpaCampos();
                         disableForm();
@@ -170,17 +159,14 @@ $(document).ready(function () {
     $('#btnNovo').click(function (){
         $('#formAction').val("new");
         $('#btnNovo').prop( "disabled", true );
-        $('#id').prop( "disabled", false );
-        $('#idDocente').prop( "disabled", false );
-        $('#especializacao').prop( "disabled", false );
-        $('#emailInstitucional').prop( "disabled", false );
-        $('#senha').prop( "disabled", false );
-        $('#senhaConf').prop( "disabled", false );
+        $('#id').prop( "disabled", true );
         $('#nome').prop( "disabled", false );
-        $('#sexo').prop( "disabled", false );
-        $('#email').prop( "disabled", false );
-        $('#cpf').prop( "disabled", false );
-        $('#data_nascimento').prop( "disabled", false );
+        $('#ano').prop( "disabled", false );
+        $('#semestre').prop( "disabled", false );
+        $('#idDocente').prop( "disabled", false );
+        $('#nomeDocente').prop( "disabled", false );
+        $('#idDiciplina').prop( "disabled", false );
+        $('#nomeDisciplina').prop( "disabled", false );
         $("#btnSalvar").removeAttr("disabled").html("Salvar");
         $('#btnSalvar').show();
         $('#btnCancelar').show()
@@ -190,23 +176,16 @@ $(document).ready(function () {
         $('#formAction').val("edit");
         $('#btnNovo').prop( "disabled", true );
         $('#id').prop( "disabled", true );
-        $('#idDocente').prop( "disabled", true );
-        $('#especializacao').prop( "disabled", false );
-        $('#emailInstitucional').prop( "disabled", false );
-        $('#senha').prop( "disabled", false );
-        $('#senhaConf').prop( "disabled", false );
         $('#nome').prop( "disabled", false );
-        $('#sexo').prop( "disabled", false );
-        $('#email').prop( "disabled", false );
-        $('#cpf').prop( "disabled", false );
-        $('#data_nascimento').prop( "disabled", false );
+        $('#ano').prop( "disabled", false );
+        $('#semestre').prop( "disabled", false );
+        $('#idDocente').prop( "disabled", false );
+        $('#nomeDocente').prop( "disabled", false );
+        $('#idDiciplina').prop( "disabled", false );
+        $('#nomeDisciplina').prop( "disabled", false );
         $("#btnSalvar").removeAttr("disabled").html("Salvar");
         $('#btnSalvar').show();
         $('#btnCancelar').show()
-    })
-
-    $('#id').blur(function(){
-        getPessoaByID();
     })
 
     $('#btnExcluir').click(function (){
@@ -241,86 +220,154 @@ $(document).ready(function () {
         }
     })
 
-    //AUTO COMPLETAR NO FORMULARIO
+    //FUNÇÕES DA BARRA DE AUTO COMPLETAR DO DOCENTE E DISCIPLINA
+    $('#idDocente').blur(function(){
+        getDocenteByID();
+    })
 
-    $('#nome').on('input',function(){
+    $('#nomeDocente').on('input',function(){
         var searchTerm = $(this).val();
 
         if (searchTerm.length >= 4) {
             $.ajax({
                 type: "GET",
-                url: `/admin/getPessoaNome/${searchTerm}`,
+                url: `/admin/getDocenteNome/${searchTerm}`,
                 success: function (response) {
 
                     if (response.length > 0){
                         let html = geraTabela(response);
-                        $('#nomePessoaBuscaAutoFill').html(html);
-                        $('#sugestionTablePessoa').show();
+                        $('#nomeDocenteBuscaAutoFill').html(html);
+                        $('#sugestionTableDocente').show();
                     }
                 },
                 error: function(response) {
                     console.log(response)
-                    $('#sugestionTablePessoa').hide();
+                    $('#sugestionTableDocente').hide();
                 }
             })
         }else {
-            $('#sugestionTablePessoa').hide();
+            $('#sugestionTableDocente').hide();
         }
     })
 
-    $("#nomePessoaBuscaTable").on("click", "tr", function() {
+
+    $('#nomeDocente').blur( function(){
+        if ($('#nomeDocente').val() === ''){
+            $('#idDocente').val('');
+        }
+    });
+
+    $("#nomeDocenteBuscaTable").on("click", "tr", function() {
         let id = $(this).find("td:eq(0)").text();
         let nome = $(this).find("td:eq(1)").text();
-        $('#id').val(id);
-        $('#nome').val(nome);
-        getPessoaByID();
-        $('#nomePessoaBuscaAutoFill').html('');
-        $('#sugestionTablePessoa').hide();
+        $('#idDocente').val(id);
+        $('#nomeDocente').val(nome);
+        getDocenteByID();
+        $('#nomeDocenteBuscaAutoFill').html('');
+        $('#sugestionTableDocente').hide();
     });
-    //
-})
 
-function getPessoaByID(){
-    let idBusca = $('#id').val();
+    $('#idDocente').blur(function(){
+        getDocenteByID();
+    })
 
-    $.ajax({
-        type: "GET",
-        url: `/admin/getPessoaId/${idBusca}`,
-        success: function (response) {
-            $('#id').val(response.id);
-            $('#nome').val(response.nome);
-            $('#sexo').val(response.sexo);
-            $('#email').val(response.email);
-            $('#cpf').val(response.cpf);
-            $('#data_nascimento').val(new Date(response.data_nascimento).toISOString().split('T')[0]);
-            $('#btnEditar').prop( "disabled", false )
-        },
-        error: function (response){
-            limpaCampos();
-            $('#btnEditar').prop( "disabled", true )
+    $('#nomeDisciplina').on('input',function(){
+        var searchTerm = $(this).val();
+
+        if (searchTerm.length >= 4) {
+            $.ajax({
+                type: "GET",
+                url: `/admin/getDisciplinaNome/${searchTerm}`,
+                success: function (response) {
+
+                    if (response.length > 0){
+                        let html = geraTabelaDisciplina(response);
+                        $('#nomeDisciplinaBuscaAutoFill').html(html);
+                        $('#sugestionTableDisciplina').show();
+                    }
+                },
+                error: function(response) {
+                    console.log(response)
+                    $('#sugestionTableDisciplina').hide();
+                }
+            })
+        }else {
+            $('#sugestionTableDocente').hide();
         }
     })
-}
+
+
+    $('#nomeDisciplina').blur( function(){
+        if ($('#nomeDisciplina').val() === ''){
+            $('#idDiciplina').val('');
+        }
+    });
+
+    $("#nomeDisciplinaBuscaTable").on("click", "tr", function() {
+        let id = $(this).find("td:eq(0)").text();
+        let nome = $(this).find("td:eq(1)").text();
+        $('#idDiciplina').val(id);
+        $('#nomeDisciplina').val(nome);
+        getDisciplinaById();
+        $('#nomeDisciplinaBuscaAutoFill').html('');
+        $('#sugestionTableDisciplina').hide();
+    });
+
+    $('#idDiciplina').blur(function(){
+        getDisciplinaById();
+    })
+    //FIM DAS FUNÇÕES DA BARRA DE AUTO COMPLETAR DO CURSO E CURRICULO
+
+})
 
 function getDocenteByID(){
-    let idBusca = $('#idBusca').val();
-
+    let idBusca = $('#idDocente').val();
     $.ajax({
         type: "GET",
         url: `/admin/getDocenteId/${idBusca}`,
         success: function (response) {
             $('#idDocente').val(response.docente_id);
-            $('#especializacao').val(response.especializacao);
-            $('#emailInstitucional').val(response.email_institucional);
-            $('#senha').val("");
-            $('#senhaConf').val("");
-            $('#nomeBusca').val(response.nome);
+            $('#nomeDocente').val(response.nome);
+        },
+        error: function (response){
+            $('#idDocente').val("");
+            $('#nomeDocente').val("");
+        }
+    })
+}
+
+function getDisciplinaById(){
+    let idBusca = $('#idDiciplina').val();
+
+    $.ajax({
+        type: "GET",
+        url: `/admin/getDisciplinaId/${idBusca}`,
+        success: function (response) {
+            $('#idDiciplina').val(response.id);
+            $('#nomeDisciplina').val(response.nome);
+        },
+        error: function (response){
+            $('#idDiciplina').val("");
+            $('#nomeDisciplina').val("");
+        }
+    })
+}
+
+function getTurmaByID(){
+    let idBusca = $('#idBusca').val();
+
+    $.ajax({
+        type: "GET",
+        url: `/admin/getTurmaId/${idBusca}`,
+        success: function (response) {
             $('#id').val(response.id);
             $('#nome').val(response.nome);
-            $('#sexo').val(response.sexo);
-            $('#email').val(response.email);
-            $('#cpf').val(response.cpf);
-            $('#data_nascimento').val(new Date(response.data_nascimento).toISOString().split('T')[0]);
+            $('#ano').val(response.ano);
+            $('#semestre').val(response.semestre);
+            $('#idDocente').val(response.docente);
+            $('#nomeDocente').val(response.nomeDocente);
+            $('#idDiciplina').val(response.disciplina);
+            $('#nomeDisciplina').val(response.nomeDisciplina);
             $('#btnEditar').prop( "disabled", false );
             $('#btnExcluir').prop( "disabled", false );
         },
@@ -335,36 +382,27 @@ function getDocenteByID(){
 
 function disableForm(){
     $('#btnNovo').prop( "disabled", false );
-    $('#btnNovo').prop( "disabled", false );
     $('#id').prop( "disabled", true );
-    $('#idDocente').prop( "disabled", true );
-    $('#especializacao').prop( "disabled", true );
-    $('#emailInstitucional').prop( "disabled", true );
-    $('#senha').prop( "disabled", true );
-    $('#senhaConf').prop( "disabled", true );
     $('#nome').prop( "disabled", true );
-    $('#sexo').prop( "disabled", true );
-    $('#email').prop( "disabled", true );
-    $('#cpf').prop( "disabled", true );
-    $('#data_nascimento').prop( "disabled", true );
+    $('#ano').prop( "disabled", true );
+    $('#semestre').prop( "disabled", true );
+    $('#idDocente').prop( "disabled", true );
+    $('#nomeDocente').prop( "disabled", true );
+    $('#idDiciplina').prop( "disabled", true );
+    $('#nomeDisciplina').prop( "disabled", true );
     $('#btnSalvar').hide()
     $('#btnCancelar').hide()
 }
 
 function limpaCampos(){
-    $('#idBusca').val("");
-    $('#nomeBusca').val("");
-    $('#idDocente').val("");
-    $('#especializacao').val("");
-    $('#emailInstitucional').val("");
-    $('#senha').val("");
-    $('#senhaConf').val("");
     $('#id').val("");
     $('#nome').val("");
-    $('#sexo').val("");
-    $('#email').val("");
-    $('#cpf').val("");
-    $('#data_nascimento').val("");
+    $('#ano').val("");
+    $('#semestre').val("");
+    $('#idDocente').val("");        
+    $('#nomeDocente').val("");        
+    $('#idDiciplina').val("");        
+    $('#nomeDisciplina').val("");
     $('#btnEditar').prop( "disabled", true )
     $('#btnExcluir').prop( "disabled", true );
 }
@@ -376,9 +414,27 @@ function geraTabela(response){
         maxLenght = response.length
     }
 
-    if (response != 'Usuário não encontrado' || response[0].id !== undefined){
+    if (response != 'Docente não encontrado' || response[0].id !== undefined){
         for (let i = 0 ; i < maxLenght ; i++){
             html += `<tr><td>${response[i].id}</td><td>${response[i].nome}</td></tr>`
+        }
+    } else{
+        html = "";
+    }
+
+    return html;
+}
+
+function geraTabelaDisciplina(response){
+    let html;
+    let maxLenght = 8;
+    if (maxLenght > response.length){
+        maxLenght = response.length
+    }
+
+    if (response != 'Disciplina não encontrado' || response[0].id !== undefined){
+        for (let i = 0 ; i < maxLenght ; i++){
+            html += `<tr><td>${response[i].disciplina_id}</td><td>${response[i].disciplina_nome}</td></tr>`
         }
     } else{
         html = "";

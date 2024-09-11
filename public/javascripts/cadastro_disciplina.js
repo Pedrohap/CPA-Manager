@@ -228,11 +228,13 @@ function geraTabela(response){
         maxLenght = response.length
     }
 
-    if (response != 'Disciplina não encontrada' || response[0].id !== undefined){
+    console.log(response);
+
+    if (response !== 'Disciplina não encontrado' || response[0].id !== undefined){
         for (let i = 0 ; i < maxLenght ; i++){
             html += `<tr><td>${response[i].disciplina_id}</td><td>${response[i].disciplina_nome}</td></tr>`
         }
-    } else{
+    } else {
         html = "";
     }
 

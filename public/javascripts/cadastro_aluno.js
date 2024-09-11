@@ -1,3 +1,5 @@
+let cursoIdGlobal = -1;
+
 $(document).ready(function () {
     $('#btnSalvar').hide()
     $('#btnCancelar').hide()
@@ -57,6 +59,51 @@ $(document).ready(function () {
         }
     });
 
+    $('#curso').on('input',function(){
+        var searchTerm = $(this).val();
+
+        if (searchTerm.length >= 4) {
+            $.ajax({
+                type: "GET",
+                url: `/admin/getCursoNome/${searchTerm}`,
+                success: function (response) {
+
+                    if (response.length > 0){
+                        let html = geraTabelaCurso(response);
+                        $('#nomeCursoBucaAutoFill').html(html);
+                        $('#sugestionTableCurso').show();
+                    }
+                },
+                error: function(response) {
+                    console.log(response)
+                    $('#sugestionTableCurso').hide();
+                }
+            })
+        }else {
+            $('#sugestionTableCurso').hide();
+        }
+    })
+
+
+    $('#curso').blur( function(){
+        if ($('#curso').val() === ''){
+            $('#siglaCurso').val('');
+            $('#curso').val('');
+            $('#curriculo').empty();
+        }
+    });
+
+    $("#nomeCursoBucaTable").on("click", "tr", function() {
+        let id = $(this).find("td:eq(0)").text();
+        let nome = $(this).find("td:eq(1)").text();
+        $('#siglaCurso').val(id);
+        $('#curso').val(nome);
+        getCursoBySigla();
+        $('#nomeCursoBucaAutoFill').html('');
+        $('#sugestionTableCurso').hide();
+    });
+
+
     //FIM DAS FUNÇÕES DA BARRA DE AUTO COMPLETAR
 
     $("#createAlunoForm").submit(function (e) {
@@ -76,6 +123,14 @@ $(document).ready(function () {
                 return
             }
 
+            if (cursoIdGlobal === -1){
+                $('#modalLabel').html("Erro");
+                $('#modalTexto').html("Favor inserir um curso para o Aluno");
+                $('#modal').modal('show');
+                $("#btnSalvar").removeAttr("disabled").html("Salvar");
+                return
+            }
+
             var formData = {
                 id: $("#id").val(),
                 idAluno: $("#idAluno").val(),
@@ -84,7 +139,7 @@ $(document).ready(function () {
                 email: $("#email").val(),
                 cpf: $("#cpf").val(),
                 data_nascimento: $("#data_nascimento").val(),
-                curso: $('#curso').val(),
+                curso: cursoIdGlobal,
                 curriculo: $('#curriculo').val(),
                 serie: $('#serie').val(),
                 senha: $('#senha').val()
@@ -128,6 +183,14 @@ $(document).ready(function () {
                     $("#btnSalvar").removeAttr("disabled").html("Salvar");
                     return
                 }
+                
+                if (cursoIdGlobal === -1){
+                    $('#modalLabel').html("Erro");
+                    $('#modalTexto').html("Favor inserir um curso para o Aluno");
+                    $('#modal').modal('show');
+                    $("#btnSalvar").removeAttr("disabled").html("Salvar");
+                    return
+                }
 
                 $("#btnSalvar").attr("disabled", "disabled");
                 $("#btnSalvar").html(`<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Salvando...</span>`);
@@ -140,7 +203,7 @@ $(document).ready(function () {
                     email: $("#email").val(),
                     cpf: $("#cpf").val(),
                     data_nascimento: $("#data_nascimento").val(),
-                    curso: $('#curso').val(),
+                    curso: cursoIdGlobal,
                     curriculo: $('#curriculo').val(),
                     serie: $('#serie').val(),
                     senha: $('#senha').val()
@@ -245,7 +308,51 @@ $(document).ready(function () {
         }
     })
 
-    //FUNÇÕES DA BARRA DE AUTO COMPLETAR DO CURSO E CURRICULO
+    //FUNÇÕES DA BARRA DE AUTO COMPLETAR DO CURSO, CURRICULO E PESSOA
+
+    $('#nome').on('input',function(){
+        var searchTerm = $(this).val();
+
+        if (searchTerm.length >= 4) {
+            $.ajax({
+                type: "GET",
+                url: `/admin/getPessoaNome/${searchTerm}`,
+                success: function (response) {
+
+                    if (response.length > 0){
+                        let html = geraTabela(response);
+                        $('#nomePessoaBuscaAutoFill').html(html);
+                        $('#sugestionTablePessoa').show();
+                    }
+                },
+                error: function(response) {
+                    console.log(response)
+                    $('#sugestionTablePessoa').hide();
+                }
+            })
+        }else {
+            $('#sugestionTablePessoa').hide();
+        }
+    })
+
+
+    $('#nomeDocente').blur( function(){
+        if ($('#nome').val() === ''){
+            $('#id').val('');
+        }
+    });
+
+    $("#nomePessoaBuscaTable").on("click", "tr", function() {
+        let id = $(this).find("td:eq(0)").text();
+        let nome = $(this).find("td:eq(1)").text();
+        $('#id').val(id);
+        $('#nome').val(nome);
+        getPessoaByID();
+        $('#nomePessoaBuscaAutoFill').html('');
+        $('#sugestionTablePessoa').hide();
+    });
+    //
+
     $('#siglaCurso').blur(function(){
         $('#siglaCurso').val($('#siglaCurso').val().toUpperCase())
         getCursoBySigla();
@@ -331,7 +438,12 @@ function getAlunoByID(){
             $('#id').val(response.id);
             $('#siglaCurso').val(response.curso_sigla);
             $('#curso').val(response.curso_nome);
-            $('#curriculo').val(response.curriculo);
+            $('#curriculo').empty();
+            $('#curriculo').append($('<option>', {
+                value: response.curriculo_id,
+                text: response.curriculo
+            }));
+            $('#serie').val(response.aluno_serie);
             $('#cpf').val(response.cpf);
             $('#sexo').val(response.sexo);
             $('#email').val(response.email);
@@ -387,6 +499,7 @@ function limpaCampos(){
     $('#serie').val ("");
     $('#btnEditar').prop( "disabled", true )
     $('#btnExcluir').prop( "disabled", true );
+    cursoIdGlobal = -1;
 }
 
 function geraTabela(response){
@@ -451,17 +564,20 @@ function getCursoBySigla(){
         url: `/admin/getCursoSigla/${idBusca}`,
         success: function (response) {
             if(response !== "Curso não encontrado"){
+                cursoIdGlobal = response.id;
                 $('#siglaCurso').val(response.sigla);
                 $('#curso').val(response.nome);
                 getCurriculosByCurso(response.id);
             } else {
                 $('#siglaCurso').val("");
                 $('#curso').val("");
+                $('#curriculo').empty();
             }
         },
         error: function (response){
             $('#siglaCurso').val("");
             $('#curso').val("");
+            $('#curriculo').empty();
         }
     })
 }
@@ -485,38 +601,6 @@ function getCurriculosByCurso(curso){
         },
         error: function (response){
             $('#curriculo').html("")
-        }
-    })
-}
-
-
-function getCursoByID(){
-    let idBusca = $('#idBusca').val();
-
-    $.ajax({
-        type: "GET",
-        url: `/admin/getAlunoId/${idBusca}`,
-        success: function (response) {
-            $('#idAluno').val(response.aluno_id);
-            $('#id').val(response.id);
-            $('#siglaCurso').val(response.curso_sigla);
-            $('#curso').val(response.curso_nome);
-            $('#curriculo').val(response.curriculo);
-            $('#cpf').val(response.cpf);
-            $('#sexo').val(response.sexo);
-            $('#email').val(response.email);
-            $('#nome').val(response.nome);
-            $('#data_nascimento').val(new Date(response.data_nascimento).toISOString().split('T')[0]);
-            $('#senha').val("");
-            $('#senhaConf').val("");
-            $('#nomeBusca').val(response.nome);
-            $('#btnEditar').prop( "disabled", false );
-            $('#btnExcluir').prop( "disabled", false );
-        },
-        error: function (response){
-            limpaCampos();
-            $('#btnEditar').prop( "disabled", true );
-            $('#btnExcluir').prop( "disabled", true );
         }
     })
 }

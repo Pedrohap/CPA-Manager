@@ -23,8 +23,8 @@ async function criarAluno(dados){
     try{
         await client.query('BEGIN');
 
-        const queryText = 'INSERT INTO tbAluno (aluno_id,aluno_serie,aluno_pessoa,aluno_curso,aluno_curriculo,senha_hash,salt) VALUES ($1, $2, $3, $4, $5, $6)';
-        const values = [dados.idAluno,dados.serie,dados.pessoa,dados.curso,dados.curriculo,senhaHash,salt]
+        const queryText = 'INSERT INTO tbAluno (aluno_id,aluno_serie,aluno_pessoa,aluno_curso,aluno_curriculo,senha_hash,salt) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+        const values = [dados.idAluno,dados.serie,dados.id,dados.curso,dados.curriculo,senhaHash,salt]
         await client.query(queryText,values);
         
         await client.query('COMMIT');
@@ -119,9 +119,9 @@ async function getAlunoByID(id){
           throw new Error('Aluno não encontrado');
         }
 
-        const docente = rows[0];
+        const aluno = rows[0];
 
-        return docente;
+        return aluno;
     } catch (error) {
       throw error;
     } finally {
@@ -136,7 +136,7 @@ async function getAlunoNomeParcial(nomeParc){
         await client.query('BEGIN');
 
         const queryText = 'SELECT *FROM aluno_dados_basicos WHERE CHAR_LENGTH(nome) >= 4 AND UPPER(nome) LIKE UPPER ($1)';
-        const values = [`%${entrada}%`];
+        const values = [`%${nomeParc}%`];
         const { rows } = await client.query(queryText, values);
 
         if (rows.length === 0) {

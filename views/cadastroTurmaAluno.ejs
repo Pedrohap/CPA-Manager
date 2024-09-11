@@ -1,0 +1,147 @@
+<%- include('layouts/header'); -%>
+<%- include('layouts/navbar'); -%>
+<%- include('layouts/modal'); -%>
+<%- include('layouts/modal-confirm'); -%>
+
+<div class="container">
+    <h1 class="display-6 mb-3">Matricular Aluno em Turma</h1>
+
+    <div class="row">
+        <div class="col-md-2">
+
+        </div>
+
+        <div class="col-md-8">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="idDiciplina" class="form-label">Cod Disciplina</label>
+                    <input type="number" class="form-control" id="idDiciplina">
+                </div>
+                <div class="col-md-5 position-relative">
+                    <label for="nomeDisciplina" class="form-label">Nome Disciplina</label>
+                    <input type="text" class="form-control" id="nomeDisciplina" >
+                    <span class="col-md-12" style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableDisciplina">
+                        <table id="nomeDisciplinaBuscaTable" class="table table-hover table-sm table-borderless">
+                            <thead>
+                              <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Nome</th>
+                              </tr>
+                            </thead>
+                            <tbody id="nomeDisciplinaBuscaAutoFill">
+                            </tbody>
+                          </table>
+                    </span>
+                </div>
+                <div class="col-md-2">
+                    <label for="anoFiltro" class="form-label">Ano</label>
+                    <input type="number" class="form-control" id="anoFiltro">
+                </div>
+                <div class="col-md-2">
+                    <label for="semestreFiltro" class="form-label">Semestre</label>
+                    <input type="number" class="form-control" id="semestreFiltro" >
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="idDocente" class="form-label">Cod Docente</label>
+                    <input type="number" class="form-control" id="idDocente">
+                </div>
+                <div class="col-md-6">
+                    <label for="nomeDocente" class="form-label">Nome Docente</label>
+                    <input type="text" class="form-control" id="nomeDocente" >
+                    <span class="col-md-4" style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableDocente">
+                        <table id="nomeDocenteBuscaTable" class="table table-hover table-sm table-borderless">
+                            <thead>
+                              <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Nome</th>
+                              </tr>
+                            </thead>
+                            <tbody id="nomeDocenteBuscaAutoFill">
+                            </tbody>
+                          </table>
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <label for="nomeTurma" class="form-label">Nome da Turma</label>
+                    <select class="form-select" id="nomeTurma">
+                        <option value="none" selected>
+                            Não Selecionada
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <label for="curriculoTable" class="form-label">Alunos da Turma</label>
+            </div>
+
+            <div class="row scrollable-table mb-5" style="height: 150px !important; padding-left: 12px; padding-right: 12px;">
+                <table id="alunosTurmaTable" class="table table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col">Matricula</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Desmatricular</th>
+                      </tr>
+                    </thead>
+                    <tbody id="alunosTurmaAutoFill">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="row mb-3">
+                <h1 class="display-6">Adicionar Aluno a Turma</h1>
+            </div>
+            <div class="row mb-3" >
+                <form id="matriculaAlunoForm">
+                    <div class="row mb-3 align-items-center justify-content-center">
+                        <div class="col-md-1">
+                            <label for="matriculaAluno" class="form-label">Matricula</label>
+                        </div>
+
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="matriculaAluno" disabled required>
+                        </div>
+
+                        <div class="col-md-1">
+                            <label for="nomeAluno" class="form-label">Nome</label>
+                        </div>
+
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" id="nomeAluno" disabled required>
+                            <span style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableAluno" class="col-md-4">
+                                <table id="nomeAlunoBuscaTable" class="table table-hover table-sm table-borderless">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Codigo</th>
+                                        <th scope="col">Nome</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody id="nomeAlunoBuscaAutoFill">
+                                    </tbody>
+                                  </table>
+                            </span>
+                        </div>
+
+                        <div class="col-md-2 text-center">
+                            <button type="submit" class="btn btn-primary" id="btnMatricularAluno" disabled   >Adicionar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/javascripts/form_script.js"></script>
+<script src="/javascripts/cadastro_aluno_turma.js"></script>
+
+<%- include('layouts/footer'); -%>

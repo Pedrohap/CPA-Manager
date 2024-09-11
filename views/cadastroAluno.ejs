@@ -58,6 +58,18 @@
                     <div class="col-md-7">
                         <label for="nome" class="form-label">Nome Completo</label>
                         <input type="text" class="form-control" id="nome" disabled required>
+                        <span style="position: absolute; padding-right: 24px; display: none;" id="sugestionTablePessoa" class="col-md-4">
+                            <table id="nomePessoaBuscaTable" class="table table-hover table-sm table-borderless">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Codigo</th>
+                                    <th scope="col">Nome</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="nomePessoaBuscaAutoFill">
+                                </tbody>
+                              </table>
+                        </span>
                     </div>
                     <div class="col-md-3">
                         <label for="sexo" class="form-label">Sexo</label>
@@ -80,6 +92,18 @@
                     <div class="col-md-4">
                         <label for="curso" class="form-label">Curso</label>
                         <input type="text" class="form-control" id="curso" disabled>
+                        <span style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableCurso" class="col-md-4">
+                            <table id="nomeCursoBucaTable" class="table table-hover table-sm table-borderless">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Sigla</th>
+                                    <th scope="col">Nome</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="nomeCursoBucaAutoFill">
+                                </tbody>
+                              </table>
+                        </span>
                     </div>
                     <div class="col-md-2">
                         <label for="curriculo" class="form-label">Curriculo</label>
