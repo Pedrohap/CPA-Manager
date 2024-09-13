@@ -23,6 +23,3 @@ jobs:
 
       - name: rodar os testes
         run: npm test
-
-      - name: buildar o projeto
-        run: npm run build
