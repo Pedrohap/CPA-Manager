@@ -35,7 +35,7 @@ $(document).ready(function () {
     $('#nomeDocente').blur( function(){
         if ($('#nomeDocente').val() === ''){
             $('#idDocente').val('');
-            $('#nomeTurma').html(`<option value="none" selected>Não Selecionada</option>`);
+            getTurmasByFiltros()
         }
     });
 
@@ -86,7 +86,7 @@ $(document).ready(function () {
     $('#nomeDisciplina').blur( function(){
         if ($('#nomeDisciplina').val() === ''){
             $('#idDiciplina').val('');
-            $('#nomeTurma').html(`<option value="none" selected>Não Selecionada</option>`);
+            getTurmasByFiltros();
         }
     });
 

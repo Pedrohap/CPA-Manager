@@ -113,3 +113,21 @@ FROM tbaluno t
 INNER JOIN tbpessoa t2 ON t.aluno_pessoa = t2.pessoa_id
 INNER JOIN tbcurso t3 ON t.aluno_curso = t3.curso_id
 INNER JOIN tbcurriculo t4 ON t.aluno_curriculo = t4.curriculo_id;
+
+CREATE VIEW formulario_dados_completos AS
+SELECT tbForm.form_id AS form_id, 
+       tbForm.criado_por AS criado_por, 
+       tbForm.form_nome AS form_nome, 
+       tbForm.isopen AS is_open, 
+       tbTurma.turma_id AS turma_id, 
+       tbTurma.turma_ano AS ano, 
+       tbTurma.turma_semestre AS semestre, 
+       tbTurma.turma_nome AS nome_turma,
+       docente_dados_basicos.id AS id_docente,
+       docente_dados_basicos.nome AS nome_docente,
+       tbDisciplina.disciplina_id AS id_disciplina,
+       tbDisciplina.disciplina_nome AS nome_disciplina
+FROM tbForm
+JOIN tbTurma ON tbForm.turma_id = tbTurma.turma_id
+JOIN docente_dados_basicos ON tbTurma.turma_docente = docente_dados_basicos.id
+JOIN tbDisciplina ON tbTurma.turma_disciplina = tbDisciplina.disciplina_id;

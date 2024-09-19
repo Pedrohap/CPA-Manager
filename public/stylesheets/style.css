@@ -7,6 +7,11 @@ a {
   color: #00B7FF;
 }
 
+.table {
+  z-index: 10;
+  position: relative;
+}
+
 .scrollable-table{
   overflow-y: scroll;
 }
@@ -44,4 +49,18 @@ a {
 
 .logout{
   color: white !important;
+}
+
+.cardCustom {
+  height: max-content;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.footer {
+  background-color: rgb(248,249,250,1) !important;
 }

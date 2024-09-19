@@ -24,8 +24,19 @@
         <li class="nav-item">
           <a class="nav-link" href="/admin">Inicial</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Consultas
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/admin/cadastrarPessoa">Listar Alunos</a></li>
+          </ul>
         </li>
         <li class="nav-item dropdown">
           <a
@@ -49,13 +60,11 @@
             <li><hr class="dropdown-divider" /></li>
             <li><a class="dropdown-item" href="#">Cadastrar Usuário</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Cadastrar Formulário</a></li>
+            <li><a class="dropdown-item" href="/admin/cadastrarFormulario">Cadastrar Formulário</a></li>
           </ul>
         </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
       </ul>
+      <!-- SEARCH BAR
       <form class="d-flex" role="search">
         <input
           class="form-control me-2"
@@ -65,6 +74,7 @@
         />
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
+      -->
       <a class="ms-4 btn btn-danger" href="./admin/logout">
         <svg
           xmlns="http://www.w3.org/2000/svg"

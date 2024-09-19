@@ -1,0 +1,223 @@
+<%- include('layouts/header'); -%>
+<%- include('layouts/navbar'); -%>
+
+<div class="container">
+    <h1 class="display-6 mb-3">Cadastrar Formulario</h1>
+
+    <div class="row">
+        <div class="col-md-2">
+
+        </div>
+
+        <div class="col-md-8">
+            <h1 class="display-6 mb-3">Buscar Formulario</h1>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="idDiciplina" class="form-label">Cod Disciplina</label>
+                    <input type="number" class="form-control" id="idDiciplina">
+                </div>
+                <div class="col-md-5 position-relative">
+                    <label for="nomeDisciplina" class="form-label">Nome Disciplina</label>
+                    <input type="text" class="form-control" id="nomeDisciplina" >
+                    <span class="col-md-12" style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableDisciplina">
+                        <table id="nomeDisciplinaBuscaTable" class="table table-hover table-sm table-borderless">
+                            <thead>
+                              <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Nome</th>
+                              </tr>
+                            </thead>
+                            <tbody id="nomeDisciplinaBuscaAutoFill">
+                            </tbody>
+                          </table>
+                    </span>
+                </div>
+                <div class="col-md-2">
+                    <label for="anoFiltro" class="form-label">Ano</label>
+                    <input type="number" class="form-control" id="anoFiltro">
+                </div>
+                <div class="col-md-2">
+                    <label for="semestreFiltro" class="form-label">Semestre</label>
+                    <input type="number" class="form-control" id="semestreFiltro" >
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="idDocente" class="form-label">Cod Docente</label>
+                    <input type="number" class="form-control" id="idDocente">
+                </div>
+                <div class="col-md-6">
+                    <label for="nomeDocente" class="form-label">Nome Docente</label>
+                    <input type="text" class="form-control" id="nomeDocente" >
+                    <span class="col-md-4" style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableDocente">
+                        <table id="nomeDocenteBuscaTable" class="table table-hover table-sm table-borderless">
+                            <thead>
+                              <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Nome</th>
+                              </tr>
+                            </thead>
+                            <tbody id="nomeDocenteBuscaAutoFill">
+                            </tbody>
+                          </table>
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <label for="nomeTurma" class="form-label">Nome da Turma</label>
+                    <select class="form-select" id="nomeTurma">
+                        <option value="none" selected>
+                            Não Selecionada
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="idForm" class="form-label">Cod Formulario</label>
+                    <input type="number" class="form-control" id="idForm">
+                </div>
+                <div class="col-md-6">
+                    <label for="nomeForm" class="form-label">Nome Formulario</label>
+                    <input type="text" class="form-control" id="nomeForm" >
+                    <span class="col-md-4" style="position: absolute; padding-right: 24px; display: none;" id="sugestionTableForm">
+                        <table id="nomeFormBuscaTable" class="table table-hover table-sm table-borderless">
+                            <thead>
+                              <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Nome</th>
+                              </tr>
+                            </thead>
+                            <tbody id="nomeFormBuscaAutoFill">
+                            </tbody>
+                          </table>
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <label for="sitForm" class="form-label">Situação do Formulario</label>
+                    <input id="sitForm" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <!-- Button trigger modal -->
+                    <button id="criarFormModalBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cadastraFormularioModal">
+                        Cadastrar Formulario
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button id="removeFormModalBtn" type="button" class="btn btn-danger" disabled>
+                        Remover Formulario
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button id="AddQuestFormModalBtn" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cadastraQuestaoModal" disabled>
+                        Adicionar Questão
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button id="limpaCampsBtn" type="button" class="btn btn-secondary" onclick="limpaCampos()">
+                        Limpar Formulario
+                    </button>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <h1 class="display-6 mb-3">Questões do Formulario</h1>
+            </div>
+
+            <hr>
+
+            <div id="listaQuestoes" class="row scrollable-table mb-5" style="height: 400px !important; padding-left: 12px; padding-right: 12px;">
+                <!--<div class="card mb-4">
+                    <div class="card-body">
+                      <h5 class="card-title">O Professor demonstrou dominância em relação a materia?</h5>
+                      <h6 class="card-subtitle mb-2 text-body-secondary">Tipo: Avaliar de 1 a 5</h6>
+                    </div>
+                    
+                    <div class="card-footer text-body-secondary">
+                        <button class="btn btn-success me-3">Ver Respostas</button>
+                        <button class="btn btn-danger">Excluir Pergunta</button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Cadastrar Formulario-->
+<div class="modal fade" id="cadastraFormularioModal" tabindex="-1" aria-labelledby="cadastraFormularioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="cadastraFormularioModalLabel">Cadastrar Formulario</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="cadastrarFormularioForm">
+                <div class="mb-3">
+                  <label for="nomeFormCreate" class="form-label">Nome do Formulario</label>
+                  <input type="text" class="form-control" id="nomeFormCreate" required>
+                </div>
+                <div class="mb-3">
+                  <label for="turmasID" class="form-label">Selecione a Turma</label>
+                  <select class="form-select" id="turmasID" required>
+                    <option></option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cadastrar Questão Formulario-->
+<div class="modal fade" id="cadastraQuestaoModal" tabindex="-1" aria-labelledby="cadastraQuestaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="cadastraQuestaoModalLabel">Cadastrar Questão</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="cadastrarFormularioForm">
+                <div class="mb-3">
+                  <label for="perguntaQuestaoCreate" class="form-label">Pergunta</label>
+                  <input type="text" class="form-control" id="perguntaQuestaoCreate" required>
+                </div>
+                <div class="mb-3">
+                  <label for="tipoQuestaoCreate" class="form-label">Tipo de Pergunta</label>
+                  <select class="form-select" id="tipoQuestaoCreate" required>
+                        <option value="1to5">
+                            Avaliar de 1 a 5
+                        </option>
+                        <option value="aberta">
+                            Aberta
+                        </option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<%- include('layouts/modal'); -%>
+<%- include('layouts/modal-confirm'); -%>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/javascripts/form_script.js"></script>
+<script src="/javascripts/cadastro_form.js"></script>
+
+<%- include('layouts/footer'); -%>

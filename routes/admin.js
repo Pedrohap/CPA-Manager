@@ -8,6 +8,7 @@ const cursoController = require('../controllers/cursoController')
 const alunoController = require('../controllers/alunoController')
 const disciplinaController = require('../controllers/disciplinaController')
 const turmaController = require('../controllers/turmaController')
+const formularioController = require('../controllers/formController')
 
 const requireAuth = (req, res, next) => {
   if (req.session.user && req.session.user.acesso === 'admin') {
@@ -647,5 +648,151 @@ router.get('/getAlunosTurma/:id', requireAuth, async function(req,res,next) {
 })
 //FIM
 
+//Rotas de Formularios ADM
+router.get('/cadastrarFormulario' ,requireAuth, function (req, res, next){
+  res.render('cadastroFormulario', {title: 'Cadastrar Formulario'})
+});
+
+router.post('/cadastrarFormulario',requireAuth, async function (req, res, next){
+  let dados = {
+    turma_id: req.body.turma_id,
+    idUsuario: req.session.user.id,
+    form_nome: req.body.form_nome
+  }
+  console.log(dados)
+
+  let result = await formularioController.criarFormulario(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getFormularioNomeParc/:nomeParc', requireAuth, async function(req,res,next) {
+  let nomeParc = req.params.nomeParc;
+
+  let result = await formularioController.getFormularioNomeParcial(nomeParc);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send('Recurso não encontrado');
+    return
+  } else {
+    res.send(result);
+  }
+})
+
+router.post('/atualizaFormulario',requireAuth, async function (req, res, next){
+  let dados = {
+    id: req.body.id,
+    docente: req.body.docente,
+    disciplina: req.body.disciplina,
+    nome: req.body.nome,
+    ano: req.body.ano,
+    semestre: req.body.semestre,
+  }
+
+  let result = await formularioController.updateFormulario(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/removeFormulario', requireAuth, async function (req, res, next){
+  let id = req.body.id;
+
+  let result = await formularioController.removeFormulario(id);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.get('/getFormId/:id', requireAuth, async function (req, res, next){
+  let id = req.params.id;
+
+  let result = await formularioController.getFormularioById(id);
+
+  if (result === "Formulario não encontrada"){
+    res.status(404).send('Recurso não encontrado');
+    return;
+  } else {
+    res.send(result);
+  }
+});
+
+router.post('/getFormularioFiltros', requireAuth, async function(req,res,next) {
+  let dados = {
+    disciplina: req.body.disciplina,
+    semestre: req.body.semestre,
+    ano: req.body.ano,
+    turma: req.body.turma
+  }
+
+  let result = await formularioController.getFormulariosByFiltros(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(404).send('Recurso não encontrado');
+    return
+  } else {
+    res.send(result);
+  }
+})
+//FIM
+
+//Questão Routes
+router.post('/cadastrarQuestao',requireAuth, async function(req,res,next) {
+  let dados= {
+    form_id: req.body.formId,
+    questao_tipo: req.body.questaTipo,
+    questao_pergunta: req.body.questaoPergunta
+  }
+
+  let result = await formularioController.criarQuestao(dados);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+})
+
+router.get('/getQuestaoByForm/:id',requireAuth, async function(req,res,next) {
+  let idForm = req.params.id;
+
+  let result = await formularioController.getQuestoesByForm(idForm);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+})
+
+router.post('/removeQuestao/:id',requireAuth, async function(req,res,next) {
+  let idQuestao = req.params.id;
+
+  let result = await formularioController.removeQuestao(idQuestao);
+
+  if (result.hasOwnProperty('status') ){
+    res.status(409).send(result);
+    return;
+  } else {
+    res.send(result);
+  }
+})
+
+//FIM
 
 module.exports = router;
