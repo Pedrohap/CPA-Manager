@@ -41,6 +41,18 @@ CPA-Manager é uma aplicação web desenvolvida em Node.js com Express e utiliza
 
 A aplicação estará disponível em `http://localhost:3000`.
 
+6. Acesse a rota:
+
+    ```bash
+    '/createAdmin'
+    ```
+A rota acima gerará o seguinte usuario padrão para acesso:
+    
+    ```bash
+    Usuário: admin
+    Senha: admin123
+    ```
+
 ## Contribuição
 
 Contribuições são bem-vindas! Se você encontrar algum problema ou tiver sugestões para melhorias, sinta-se à vontade para abrir uma issue ou enviar um pull request.
